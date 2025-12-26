@@ -47,6 +47,7 @@
             // 
             // CmbPeriodeBoekjaar
             // 
+            this.CmbPeriodeBoekjaar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CmbPeriodeBoekjaar.FormattingEnabled = true;
             this.CmbPeriodeBoekjaar.Location = new System.Drawing.Point(96, 40);
             this.CmbPeriodeBoekjaar.Name = "CmbPeriodeBoekjaar";
@@ -56,6 +57,7 @@
             // 
             // CmbBoekjaar
             // 
+            this.CmbBoekjaar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CmbBoekjaar.FormattingEnabled = true;
             this.CmbBoekjaar.Location = new System.Drawing.Point(205, 71);
             this.CmbBoekjaar.Name = "CmbBoekjaar";
@@ -65,6 +67,7 @@
             // 
             // BtnVerkleinen
             // 
+            this.BtnVerkleinen.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.BtnVerkleinen.Location = new System.Drawing.Point(10, 69);
             this.BtnVerkleinen.Name = "BtnVerkleinen";
             this.BtnVerkleinen.Size = new System.Drawing.Size(80, 29);
@@ -105,7 +108,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(307, 108);
+            this.CancelButton = this.BtnVerkleinen;
+            this.ClientSize = new System.Drawing.Size(311, 110);
             this.ControlBox = false;
             this.Controls.Add(this.lblActiefBoekjaar);
             this.Controls.Add(this.lblActievePeriode);
@@ -118,8 +122,10 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormBJPERDAT";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Datum / Periode / Boekjaar (Ctrl+D)";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.Activated += new System.EventHandler(this.FormBJPERDAT_Activated);
             this.Load += new System.EventHandler(this.FormBJPERDAT_Load);
             this.ResumeLayout(false);

@@ -9,7 +9,17 @@ namespace mar2026
         public FormBJPERDAT()
         {
             InitializeComponent();
+            // Optional: prevent automatic resizing
+            this.AutoSize = false;
+            this.AutoSizeMode = AutoSizeMode.GrowOnly;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog; // or FixedSingle/Fixed3D
+            this.MaximizeBox = false;
+
+            // Optional: force your preferred size
+            // 327; 149
+            this.Size = new System.Drawing.Size(327, 149); // pick your design size
         }
+        
 
         private void BtnVerkleinen_Click(object sender, EventArgs e)
         {
@@ -36,15 +46,17 @@ namespace mar2026
         private void DatumVerwerking_ValueChanged(object sender, EventArgs e)
         {
             ModLibs.MIM_GLOBAL_DATE = DatumVerwerking.Value.ToString("dd/MM/yyyy");
+
             if (Application.OpenForms["FormMim"] is FormMim mim)
             {
-                mim.Invoke(new Action(() => mim.Controls.Find("datumVerwerking", true)));
+                mim.toolStripStatusBookingsDate.Text = ModLibs.MIM_GLOBAL_DATE;
             }
         }
 
         private void CmbBoekjaar_SelectedIndexChanged(object sender, EventArgs e)
         {
             ModLibs.ACTIVE_BOOKYEAR = (short)CmbBoekjaar.SelectedIndex;
+
         }
 
         private void CmbPeriodeBoekjaar_SelectedIndexChanged(object sender, EventArgs e)
@@ -61,8 +73,6 @@ namespace mar2026
             ModLibs.PERIOD_FROMTO = periodFromTo;
 
             this.Text = "(" + (this.CmbBoekjaar.Text ?? string.Empty) + ") (" + a.Substring(0, 10) + ") BoekPeriode";
-
-
         }
     }
 }

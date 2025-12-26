@@ -226,12 +226,7 @@ namespace mar2026.Forms
         {
             DoOpenCompany();
         }
-
-        private void ListViewCompanies_GotFocus(object sender, EventArgs e)
-        {
-
-        }
-
+                
         private void ButtonnOk_Click(object sender, EventArgs e)
         {
             DoOpenCompany();
@@ -252,22 +247,28 @@ namespace mar2026.Forms
             }
 
             for (int i = 1; i <= 3; i++)
-            { 
-                // Example: activate BasisB[1] (Fiche Klanten)
+            {
                 var fiche = ModLibs.BasisB[i];
                 fiche.Enabled = true;
-                fiche.WindowState = FormWindowState.Normal;
+                fiche.WindowState = FormWindowState.Minimized;
+                fiche.Width = 381;
+                fiche.Height = 191;
                 fiche.BringToFront();
                 fiche.Activate();
             }
 
-            // AutoLoadBedrijf equivalent: use AutoLoadCompany.Run
-            // if (Application.OpenForms["FormBJPERDAT"] is FormBJPERDAT bj)
-            // {
-            //     AutoLoadCompany.Run((FormMim)Application.OpenForms["FormMim"], bj);
-            // }
+            // Ensure FormBJPERDAT exists and is loaded
+            FormBJPERDAT bj = Application.OpenForms["FormBJPERDAT"] as FormBJPERDAT;
+            if (bj == null)
+            {
+                bj = new FormBJPERDAT();
+                bj.MdiParent = Application.OpenForms["FormMim"]; // only if MDI
+                bj.Show();
+            }
 
-            // Close();
+            AutoLoadCompany.Run((FormMim)Application.OpenForms["FormMim"], bj);
+
+            Close();
         }
 
         private void ButtonCompact_Click(object sender, EventArgs e)

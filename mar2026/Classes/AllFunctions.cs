@@ -958,7 +958,8 @@ namespace mar2026.Classes
                 MIM_GLOBAL_DATE ?? System.DateTime.Now.ToString("dd/MM/yyyy"),
                 "dd/MM/yyyy",
                 System.Globalization.CultureInfo.InvariantCulture);
-            mim.datumVerwerking.Value = bjPerDat.DatumVerwerking.Value;
+            mim.toolStripStatusBookingsDate.Text = bjPerDat.DatumVerwerking.Value.ToString();
+            
             bjPerDat.CmbPeriodeBoekjaar.Items.Clear();
 
             // VB6 netVoorbereiden: create .OXT from DEFxx.OCT
@@ -1494,73 +1495,73 @@ namespace mar2026.Classes
             FL_NUMBEROFINDEXEN[TABLE_DUMMY] = 0;
             JETTABLEUSE_INDEX[TABLE_DUMMY, 0] = "v089 "; FLINDEX_LEN[TABLE_DUMMY, 0] = 20; FLINDEX_CAPTION[TABLE_DUMMY, 0] = "Plaatselijk sorteren";
 
-            for (int t = TABLE_VARIOUS; t <= TABLE_COUNTERS; t++)
-            {
-                BClose(t);
-                BOpen(t);
+            //for (int t = TABLE_VARIOUS; t <= TABLE_COUNTERS; t++)
+            //{
+            //    BClose(t);
+            //    BOpen(t);
 
-                // TeleBibPagina(t) equivalent not yet ported; keep success for now.
-                // If you port TeleBibPagina, call it here and set ok = false on failure.
+            //    // TeleBibPagina(t) equivalent not yet ported; keep success for now.
+            //    // If you port TeleBibPagina, call it here and set ok = false on failure.
 
-                if (t == TABLE_VARIOUS || t == TABLE_COUNTERS)
-                {
-                    continue;
-                }
+            //    if (t == TABLE_VARIOUS || t == TABLE_COUNTERS)
+            //    {
+            //        continue;
+            //    }
 
-                string aa = string.Empty;
+            //    string aa = string.Empty;
 
-                try
-                {
-                    // Phase 1: collect all existing index names from ntDB.TableDefs(bstNaam(t)).Indexes
-                    if (NT_DB != null && !string.IsNullOrEmpty(bstNaam[t]))
-                    {
-                        foreach (var idx in NT_DB.TableDefs[bstNaam[t]].Indexes)
-                        {
-                            var daoIndex = (DAO.Index)idx;
-                            aa += daoIndex.Name + ";";
-                        }
-                    }
-                }
-                catch
-                {
-                    // Ignore DAO errors; we'll just skip index verification.
-                    continue;
-                }
+            //    try
+            //    {
+            //        // Phase 1: collect all existing index names from ntDB.TableDefs(bstNaam(t)).Indexes
+            //        if (NT_DB != null && !string.IsNullOrEmpty(bstNaam[t]))
+            //        {
+            //            foreach (var idx in NT_DB.TableDefs[bstNaam[t]].Indexes)
+            //            {
+            //                var daoIndex = (DAO.Index)idx;
+            //                aa += daoIndex.Name + ";";
+            //            }
+            //        }
+            //    }
+            //    catch
+            //    {
+            //        // Ignore DAO errors; we'll just skip index verification.
+            //        continue;
+            //    }
 
-                // Phase 2: verify presence of standard definitions
-                for (int tt = 0; tt <= FL_NUMBEROFINDEXEN[t]; tt++)
-                {
-                    string caption = FLINDEX_CAPTION[t, tt];
-                    if (string.IsNullOrEmpty(caption))
-                        continue;
+            //    // Phase 2: verify presence of standard definitions
+            //    for (int tt = 0; tt <= FL_NUMBEROFINDEXEN[t]; tt++)
+            //    {
+            //        string caption = FLINDEX_CAPTION[t, tt];
+            //        if (string.IsNullOrEmpty(caption))
+            //            continue;
 
-                    int pos = aa.IndexOf(caption, StringComparison.Ordinal);
-                    if (pos >= 0)
-                    {
-                        if (pos == 0)
-                        {
-                            aa = aa.Substring(caption.Length + 1);
-                        }
-                        else
-                        {
-                            aa = aa.Substring(0, pos) + aa.Substring(pos + caption.Length + 1);
-                        }
-                    }
-                    else if (caption == "Boekdatum")
-                    {
-                        // ignore missing "Boekdatum" index, as in VB6
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Index '" + caption + "' van tabel '" + bstNaam[t] + "' bestaat niet meer !!!",
-                            "InitBestanden",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                        ok = false;
-                    }
-                }
-            }
+            //        int pos = aa.IndexOf(caption, StringComparison.Ordinal);
+            //        if (pos >= 0)
+            //        {
+            //            if (pos == 0)
+            //            {
+            //                aa = aa.Substring(caption.Length + 1);
+            //            }
+            //            else
+            //            {
+            //                aa = aa.Substring(0, pos) + aa.Substring(pos + caption.Length + 1);
+            //            }
+            //        }
+            //        else if (caption == "Boekdatum")
+            //        {
+            //            // ignore missing "Boekdatum" index, as in VB6
+            //        }
+            //        else
+            //        {
+            //            MessageBox.Show(
+            //                "Index '" + caption + "' van tabel '" + bstNaam[t] + "' bestaat niet meer !!!",
+            //                "InitBestanden",
+            //                MessageBoxButtons.OK,
+            //                MessageBoxIcon.Warning);
+            //            ok = false;
+            //        }
+            //    }
+            //}
 
             return ok;
         }

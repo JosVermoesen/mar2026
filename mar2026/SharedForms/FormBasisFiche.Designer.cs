@@ -96,12 +96,14 @@ namespace mar2026
             // 
             // ButtonMinimize
             // 
+            this.ButtonMinimize.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.ButtonMinimize.Location = new System.Drawing.Point(263, 72);
             this.ButtonMinimize.Name = "ButtonMinimize";
             this.ButtonMinimize.Size = new System.Drawing.Size(93, 23);
             this.ButtonMinimize.TabIndex = 7;
             this.ButtonMinimize.Text = "&Minimaliseren";
             this.ButtonMinimize.UseVisualStyleBackColor = true;
+            this.ButtonMinimize.Click += new System.EventHandler(this.ButtonMinimize_Click);
             // 
             // ButtonRelating
             // 
@@ -144,6 +146,7 @@ namespace mar2026
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.ButtonMinimize;
             this.ClientSize = new System.Drawing.Size(365, 152);
             this.ControlBox = false;
             this.Controls.Add(this.ButtonSearchOn);
@@ -162,7 +165,7 @@ namespace mar2026
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "BasisFiche";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;            
             this.ResumeLayout(false);
             this.PerformLayout();
 

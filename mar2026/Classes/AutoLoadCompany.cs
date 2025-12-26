@@ -36,7 +36,10 @@ namespace mar2026.Classes
                 MIM_GLOBAL_DATE ?? DateTime.Now.ToString("dd/MM/yyyy"),
                 "dd/MM/yyyy",
                 System.Globalization.CultureInfo.InvariantCulture);
-            mim.datumVerwerking.Value = bjPerDat.DatumVerwerking.Value;
+            
+            // mim.toolStripStatusLabelBookingsDate.Text =
+            //         bjPerDat.DatumVerwerking.Value.ToString("dd/MM/yyyy");
+
             bjPerDat.CmbPeriodeBoekjaar.Items.Clear();
 
             // Optional: prepare .OXT DEF files like VB6 netVoorbereiden
@@ -54,7 +57,7 @@ namespace mar2026.Classes
             // TODO: add schema upgrade blocks, Peppol/QR/vpeSjbs/vat folders, etc.
 
             // Finally show the BJPERDAT form like VB6.
-            bjPerDat.Show(mim);
+            //bjPerDat.Show(mim);
         }
 
         public static void LoadBookyearsAndPeriods(FormBJPERDAT bjPerDat)
@@ -234,15 +237,15 @@ namespace mar2026.Classes
                 LOCATION_NETDATA = string.Empty;
             }
 
-            // Ensure jrYYYY names via TabelKontrole
-            try
-            {
-                TabelKontrole();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "TabelKontrole", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //// Ensure jrYYYY names via TabelKontrole
+            //try
+            //{
+            //    TabelKontrole();
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, "TabelKontrole", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
 
             try
             {

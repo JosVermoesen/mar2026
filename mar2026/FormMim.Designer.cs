@@ -6,10 +6,7 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        public System.Windows.Forms.DateTimePicker datumVerwerking;
         private System.Windows.Forms.ComboBox cmdWegBoekModus;
-        private System.Windows.Forms.Panel infoData;
-        private System.Windows.Forms.ListBox verkoopDetail;
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem menuActions;
         private System.Windows.Forms.ToolStripMenuItem MenuActionsOpenCompany;
@@ -43,10 +40,10 @@
         private System.Windows.Forms.ToolStripMenuItem menuPeppolValidator;
         private System.Windows.Forms.ToolStripMenuItem menuPeppolDocs;
         private System.Windows.Forms.ToolStripMenuItem menuPeppolClickOnce;
-        private System.Windows.Forms.ToolStripMenuItem MenuVensterSchikTrapsgewijs;
-        private System.Windows.Forms.ToolStripMenuItem MenuVensterSchikOnderElkaar;
-        private System.Windows.Forms.ToolStripMenuItem MenuVensterSchikNaastElkaar;
-        private System.Windows.Forms.ToolStripMenuItem MenuVensterSchikPictogrammen;
+        private System.Windows.Forms.ToolStripMenuItem MenuCascadeOpenForms;
+        private System.Windows.Forms.ToolStripMenuItem MenuTileOpenFormsVertical;
+        private System.Windows.Forms.ToolStripMenuItem MenuTileOpenFormsHorizontal;
+        private System.Windows.Forms.ToolStripMenuItem MenuArrangeOpenForms;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -70,11 +67,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMim));
-            this.datumVerwerking = new System.Windows.Forms.DateTimePicker();
             this.cmdWegBoekModus = new System.Windows.Forms.ComboBox();
-            this.infoData = new System.Windows.Forms.Panel();
-            this.verkoopDetail = new System.Windows.Forms.ListBox();
-            this.imgFiguur = new System.Windows.Forms.PictureBox();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuActions = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuActionsOpenCompany = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,12 +82,15 @@
             this.MenuActionsCloseApp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSysteem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuWindow = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuVensterSchikTrapsgewijs = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuVensterSchikOnderElkaar = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuVensterSchikNaastElkaar = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuVensterSchikPictogrammen = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuOpenVenstersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuCascadeOpenForms = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuTileOpenFormsVertical = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuTileOpenFormsHorizontal = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuArrangeOpenForms = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuListOpenForms = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFiles = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripCustomers = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripSuppliers = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripLedgerAccounts = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDocument = new System.Windows.Forms.ToolStripMenuItem();
             this.menuAccounting = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContracts = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,20 +109,12 @@
             this.menuPeppolValidator = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPeppolDocs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPeppolClickOnce = new System.Windows.Forms.ToolStripMenuItem();
-            this.infoData.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.imgFiguur)).BeginInit();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusBookingsDate = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainMenu.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // datumVerwerking
-            // 
-            this.datumVerwerking.CustomFormat = "dd/MM/yyyy";
-            this.datumVerwerking.Enabled = false;
-            this.datumVerwerking.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.datumVerwerking.Location = new System.Drawing.Point(751, 52);
-            this.datumVerwerking.Name = "datumVerwerking";
-            this.datumVerwerking.Size = new System.Drawing.Size(103, 20);
-            this.datumVerwerking.TabIndex = 3;
             // 
             // cmdWegBoekModus
             // 
@@ -137,40 +125,6 @@
             this.cmdWegBoekModus.Name = "cmdWegBoekModus";
             this.cmdWegBoekModus.Size = new System.Drawing.Size(367, 21);
             this.cmdWegBoekModus.TabIndex = 6;
-            // 
-            // infoData
-            // 
-            this.infoData.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.infoData.Controls.Add(this.verkoopDetail);
-            this.infoData.Controls.Add(this.imgFiguur);
-            this.infoData.Dock = System.Windows.Forms.DockStyle.Left;
-            this.infoData.Location = new System.Drawing.Point(0, 24);
-            this.infoData.Name = "infoData";
-            this.infoData.Size = new System.Drawing.Size(372, 523);
-            this.infoData.TabIndex = 8;
-            this.infoData.Visible = false;
-            // 
-            // verkoopDetail
-            // 
-            this.verkoopDetail.BackColor = System.Drawing.Color.White;
-            this.verkoopDetail.Font = new System.Drawing.Font("Courier New", 8.25F);
-            this.verkoopDetail.ForeColor = System.Drawing.Color.Black;
-            this.verkoopDetail.FormattingEnabled = true;
-            this.verkoopDetail.ItemHeight = 14;
-            this.verkoopDetail.Location = new System.Drawing.Point(-12, 300);
-            this.verkoopDetail.Name = "verkoopDetail";
-            this.verkoopDetail.Size = new System.Drawing.Size(806, 172);
-            this.verkoopDetail.TabIndex = 9;
-            this.verkoopDetail.Visible = false;
-            // 
-            // imgFiguur
-            // 
-            this.imgFiguur.Location = new System.Drawing.Point(252, 168);
-            this.imgFiguur.Name = "imgFiguur";
-            this.imgFiguur.Size = new System.Drawing.Size(73, 109);
-            this.imgFiguur.TabIndex = 10;
-            this.imgFiguur.TabStop = false;
-            this.imgFiguur.Visible = false;
             // 
             // mainMenu
             // 
@@ -187,7 +141,7 @@
             this.menuHelp});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(874, 24);
+            this.mainMenu.Size = new System.Drawing.Size(875, 24);
             this.mainMenu.TabIndex = 11;
             this.mainMenu.Text = "MenuStrip";
             // 
@@ -288,55 +242,80 @@
             // menuWindow
             // 
             this.menuWindow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuVensterSchikTrapsgewijs,
-            this.MenuVensterSchikOnderElkaar,
-            this.MenuVensterSchikNaastElkaar,
-            this.MenuVensterSchikPictogrammen,
-            this.MenuOpenVenstersToolStripMenuItem});
+            this.MenuCascadeOpenForms,
+            this.MenuTileOpenFormsVertical,
+            this.MenuTileOpenFormsHorizontal,
+            this.MenuArrangeOpenForms,
+            this.MenuListOpenForms});
             this.menuWindow.Name = "menuWindow";
             this.menuWindow.Size = new System.Drawing.Size(57, 20);
             this.menuWindow.Text = "&Venster";
             // 
-            // MenuVensterSchikTrapsgewijs
+            // MenuCascadeOpenForms
             // 
-            this.MenuVensterSchikTrapsgewijs.Name = "MenuVensterSchikTrapsgewijs";
-            this.MenuVensterSchikTrapsgewijs.Size = new System.Drawing.Size(202, 22);
-            this.MenuVensterSchikTrapsgewijs.Text = "&Trapsgewijs";
-            this.MenuVensterSchikTrapsgewijs.Click += new System.EventHandler(this.MenuWindowCascade_Click);
+            this.MenuCascadeOpenForms.Name = "MenuCascadeOpenForms";
+            this.MenuCascadeOpenForms.Size = new System.Drawing.Size(202, 22);
+            this.MenuCascadeOpenForms.Text = "&Trapsgewijs";
+            this.MenuCascadeOpenForms.Click += new System.EventHandler(this.MenuWindowCascade_Click);
             // 
-            // MenuVensterSchikOnderElkaar
+            // MenuTileOpenFormsVertical
             // 
-            this.MenuVensterSchikOnderElkaar.Name = "MenuVensterSchikOnderElkaar";
-            this.MenuVensterSchikOnderElkaar.Size = new System.Drawing.Size(202, 22);
-            this.MenuVensterSchikOnderElkaar.Text = "&Onder elkaar";
-            this.MenuVensterSchikOnderElkaar.Click += new System.EventHandler(this.MenuWindowTileVertical_Click);
+            this.MenuTileOpenFormsVertical.Name = "MenuTileOpenFormsVertical";
+            this.MenuTileOpenFormsVertical.Size = new System.Drawing.Size(202, 22);
+            this.MenuTileOpenFormsVertical.Text = "&Onder elkaar";
+            this.MenuTileOpenFormsVertical.Click += new System.EventHandler(this.MenuWindowTileVertical_Click);
             // 
-            // MenuVensterSchikNaastElkaar
+            // MenuTileOpenFormsHorizontal
             // 
-            this.MenuVensterSchikNaastElkaar.Name = "MenuVensterSchikNaastElkaar";
-            this.MenuVensterSchikNaastElkaar.Size = new System.Drawing.Size(202, 22);
-            this.MenuVensterSchikNaastElkaar.Text = "&Naast elkaar";
-            this.MenuVensterSchikNaastElkaar.Click += new System.EventHandler(this.MenuWindowTileHorizontal_Click);
+            this.MenuTileOpenFormsHorizontal.Name = "MenuTileOpenFormsHorizontal";
+            this.MenuTileOpenFormsHorizontal.Size = new System.Drawing.Size(202, 22);
+            this.MenuTileOpenFormsHorizontal.Text = "&Naast elkaar";
+            this.MenuTileOpenFormsHorizontal.Click += new System.EventHandler(this.MenuWindowTileHorizontal_Click);
             // 
-            // MenuVensterSchikPictogrammen
+            // MenuArrangeOpenForms
             // 
-            this.MenuVensterSchikPictogrammen.Name = "MenuVensterSchikPictogrammen";
-            this.MenuVensterSchikPictogrammen.Size = new System.Drawing.Size(202, 22);
-            this.MenuVensterSchikPictogrammen.Text = "&Pictogrammen schikken";
-            this.MenuVensterSchikPictogrammen.Click += new System.EventHandler(this.MenuWindowArrangeIcons_Click);
+            this.MenuArrangeOpenForms.Name = "MenuArrangeOpenForms";
+            this.MenuArrangeOpenForms.Size = new System.Drawing.Size(202, 22);
+            this.MenuArrangeOpenForms.Text = "&Pictogrammen schikken";
+            this.MenuArrangeOpenForms.Click += new System.EventHandler(this.MenuWindowArrangeIcons_Click);
             // 
-            // MenuOpenVenstersToolStripMenuItem
+            // MenuListOpenForms
             // 
-            this.MenuOpenVenstersToolStripMenuItem.Name = "MenuOpenVenstersToolStripMenuItem";
-            this.MenuOpenVenstersToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.MenuOpenVenstersToolStripMenuItem.Text = "Open Vensters";
-            this.MenuOpenVenstersToolStripMenuItem.Click += new System.EventHandler(this.MenuOpenVenstersToolStripMenuItem_Click);
+            this.MenuListOpenForms.Name = "MenuListOpenForms";
+            this.MenuListOpenForms.Size = new System.Drawing.Size(202, 22);
+            this.MenuListOpenForms.Text = "Open Vensters";
+            this.MenuListOpenForms.DropDownOpening += new System.EventHandler(this.MenuListOpenForms_DropDownOpening);
             // 
             // menuFiles
             // 
+            this.menuFiles.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripCustomers,
+            this.ToolStripSuppliers,
+            this.ToolStripLedgerAccounts});
             this.menuFiles.Name = "menuFiles";
             this.menuFiles.Size = new System.Drawing.Size(52, 20);
             this.menuFiles.Text = "&Fiches";
+            // 
+            // ToolStripCustomers
+            // 
+            this.ToolStripCustomers.Name = "ToolStripCustomers";
+            this.ToolStripCustomers.Size = new System.Drawing.Size(193, 22);
+            this.ToolStripCustomers.Text = "Klanten";
+            this.ToolStripCustomers.Click += new System.EventHandler(this.ToolStripCustomers_Click);
+            // 
+            // ToolStripSuppliers
+            // 
+            this.ToolStripSuppliers.Name = "ToolStripSuppliers";
+            this.ToolStripSuppliers.Size = new System.Drawing.Size(193, 22);
+            this.ToolStripSuppliers.Text = "Leveranciers";
+            this.ToolStripSuppliers.Click += new System.EventHandler(this.ToolStripSuppliers_Click);
+            // 
+            // ToolStripLedgerAccounts
+            // 
+            this.ToolStripLedgerAccounts.Name = "ToolStripLedgerAccounts";
+            this.ToolStripLedgerAccounts.Size = new System.Drawing.Size(193, 22);
+            this.ToolStripLedgerAccounts.Text = "Algemene Rekeningen";
+            this.ToolStripLedgerAccounts.Click += new System.EventHandler(this.ToolStripLedgerAccounts_Click);
             // 
             // menuDocument
             // 
@@ -463,14 +442,35 @@
             this.menuPeppolClickOnce.Size = new System.Drawing.Size(194, 22);
             this.menuPeppolClickOnce.Text = "ClickOnce MarSync";
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripStatusBookingsDate});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 446);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(875, 22);
+            this.statusStrip1.TabIndex = 13;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(104, 17);
+            this.toolStripStatusLabel1.Text = "Datum verwerking";
+            // 
+            // toolStripStatusBookingsDate
+            // 
+            this.toolStripStatusBookingsDate.Name = "toolStripStatusBookingsDate";
+            this.toolStripStatusBookingsDate.Size = new System.Drawing.Size(0, 17);
+            // 
             // FormMim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(874, 547);
-            this.Controls.Add(this.infoData);
+            this.ClientSize = new System.Drawing.Size(875, 468);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.cmdWegBoekModus);
-            this.Controls.Add(this.datumVerwerking);
             this.Controls.Add(this.mainMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
@@ -479,19 +479,23 @@
             this.Text = "marIntegraal";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMim_FormClosing);
             this.Load += new System.EventHandler(this.FormMim_Load);
-            this.infoData.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.imgFiguur)).EndInit();
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox imgFiguur;
-        private System.Windows.Forms.ToolStripMenuItem MenuOpenVenstersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuListOpenForms;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripCustomers;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripSuppliers;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripLedgerAccounts;
+        public System.Windows.Forms.StatusStrip statusStrip1;
+        public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        public System.Windows.Forms.ToolStripStatusLabel toolStripStatusBookingsDate;
     }
 }
 

@@ -129,9 +129,8 @@
             this.ListViewCompanies.Name = "ListViewCompanies";
             this.ListViewCompanies.Size = new System.Drawing.Size(553, 153);
             this.ListViewCompanies.TabIndex = 9;
-            this.ListViewCompanies.UseCompatibleStateImageBehavior = false;
-            this.ListViewCompanies.DoubleClick += new System.EventHandler(this.ListViewCompanies_DoubleClick);
-            this.ListViewCompanies.Enter += new System.EventHandler(this.ListViewCompanies_GotFocus);
+            this.ListViewCompanies.UseCompatibleStateImageBehavior = false;            
+            this.ListViewCompanies.DoubleClick += new System.EventHandler(this.ListViewCompanies_DoubleClick);            
             // 
             // FormOpenCompany
             // 

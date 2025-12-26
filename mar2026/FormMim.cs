@@ -41,7 +41,8 @@ namespace mar2026
                 Width = Properties.Settings.Default.MainWidth;
                 Height = Properties.Settings.Default.MainHeight;
             }
-            datumVerwerking.Value = DateTime.Now;
+                        
+            toolStripStatusBookingsDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
             // PROGRAM_LOCATION = App.Path + "\"
             ModLibs.PROGRAM_LOCATION = Application.StartupPath.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
@@ -194,15 +195,15 @@ namespace mar2026
 
             // MIM_GLOBAL_DATE = Format(Now, "dd/mm/yyyy")
             ModLibs.MIM_GLOBAL_DATE = DateTime.Now.ToString("dd/MM/yyyy");
-
             Cursor = Cursors.Default;
-
             cmdWegBoekModus.Items.Clear();
             cmdWegBoekModus.Items.Add("0: Geen BoekingsInfo tonen (EUROTEST niet actief)");
             cmdWegBoekModus.Items.Add("1: Enkel BoekingsInfo tonen bij EUR<>BEF verschil");
             cmdWegBoekModus.Items.Add("2: Altijd BoekingsInfo tonen");
             cmdWegBoekModus.SelectedIndex = 2;
 
+            // Pre-initialize array slots, but do NOT create or show the forms here.
+            // They will be created with fixed size in ShowBasisFiche when first used.
             for (int i = 1; i <= 3; i++)
             {
                 if (ModLibs.BasisB[i] == null || ModLibs.BasisB[i].IsDisposed)
@@ -237,6 +238,8 @@ namespace mar2026
                 }
             }
             ModLibs.FormReference = ModLibs.BasisB[1];
+            FormReference = null;
+            Cursor = Cursors.Default;
 
             // Equivalent of BedrijfOpenen.Show
             var openCompany = new mar2026.Forms.FormOpenCompany
@@ -279,7 +282,7 @@ namespace mar2026
         private void DatumVerwerking_ValueChanged(object sender, EventArgs e)
         {
             // VB6 stored this into MIM_GLOBAL_DATE and copied to BJPERDAT.DatumVerwerking.
-            ModLibs.MIM_GLOBAL_DATE = this.datumVerwerking.Value.ToString("dd/MM/yyyy");
+            ModLibs.MIM_GLOBAL_DATE = this.toolStripStatusBookingsDate.Text;
         }
 
         private void CmdWegBoekModus_SelectedIndexChanged(object sender, EventArgs e)
@@ -413,25 +416,7 @@ namespace mar2026
             ShellExecuteWithFallback("https://clickonce.vsoft.be/MarSync/publish.htm");
         }
 
-        public void ShowBJPERDAT()
-        {
-            foreach (Form child in this.MdiChildren)
-            {
-                if (child is FormBJPERDAT existing)
-                {
-                    existing.WindowState = FormWindowState.Normal;
-                    existing.BringToFront();
-                    return;
-                }
-            }
-
-            var frm = new FormBJPERDAT
-            {
-                MdiParent = this
-            };
-            frm.Show();
-        }
-        
+                
         public static string VSet(string text, short length)
         {
             return SetSpacing(text ?? string.Empty, length);
@@ -456,24 +441,8 @@ namespace mar2026
         {
             LayoutMdi(MdiLayout.ArrangeIcons);
         }
-
-        private void MenuOpenVenstersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var menu = sender as ToolStripMenuItem;
-            menu.DropDownItems.Clear();
-            foreach (Form child in MdiChildren)
-            {
-                var item = new ToolStripMenuItem
-                {
-                    Text = child.Text,
-                    Tag = child
-                };
-                item.Click += MenuOpenVenstersChild_Click;
-                menu.DropDownItems.Add(item);
-            }
-        }
-
-        private void MenuOpenVenstersChild_Click(object sender, EventArgs e)
+                
+        private void MenuOpenFormsChild_Click(object sender, EventArgs e)
         {
             if (sender is ToolStripMenuItem menuItem && menuItem.Tag is Form form)
             {
@@ -552,13 +521,114 @@ namespace mar2026
             MONTH_AS_TEXT[11] = "November ";
             MONTH_AS_TEXT[12] = "December ";
         }
-                
-        
+
+
 
         //public static object XrsMar(short fl, string TBS)
         //{
         //    var value = RS_MAR[fl].Fields[TBS].Value;
         //    return (value == null || value is System.DBNull) ? string.Empty : value;
         //}
+
+        
+        private void ToolStripCustomers_Click(object sender, EventArgs e)
+        {
+            ShowBasisFiche(1);
+        }
+
+        private void ToolStripSuppliers_Click(object sender, EventArgs e)
+        {
+            ShowBasisFiche(2);
+        }
+
+        private void ToolStripLedgerAccounts_Click(object sender, EventArgs e)
+        {
+            ShowBasisFiche(3);
+        }
+
+        private void MenuListOpenForms_DropDownOpening(object sender, EventArgs e)
+        {
+            var menu = sender as ToolStripMenuItem;
+            if (menu == null) return;
+
+            menu.DropDownItems.Clear();
+            foreach (Form child in MdiChildren)
+            {
+                var item = new ToolStripMenuItem
+                {
+                    Text = child.Text,
+                    Tag = child
+                };
+                item.Click += MenuOpenFormsChild_Click;
+                menu.DropDownItems.Add(item);
+            }
+        }
+
+        private void ShowBasisFiche(int index)
+        {
+            if (index < 1 || index > 3)
+                return;
+
+            if (BasisB[index] == null || BasisB[index].IsDisposed)
+            {
+                BasisB[index] = new FormBasisFiche
+                {
+                    MdiParent = this
+                };
+
+                switch (index)
+                {
+                    case 1:
+                        BasisB[1].Text = "Fiche Klanten";
+                        BasisB[1].BackColor = System.Drawing.Color.Blue;
+                        break;
+                    case 2:
+                        BasisB[2].Text = "Fiche Leveranciers";
+                        BasisB[2].BackColor = System.Drawing.Color.Red;
+                        break;
+                    case 3:
+                        BasisB[3].Text = "Rekening Fiche";
+                        BasisB[3].BackColor = System.Drawing.Color.White;
+                        break;
+                }
+
+                BasisB[index].Show();
+            }
+
+            var form = BasisB[index];
+
+            // Force fixed size every time you show/activate
+            form.MinimumSize = new System.Drawing.Size(327, 149);
+            form.MaximumSize = new System.Drawing.Size(327, 149);
+            form.Size = new System.Drawing.Size(327, 149);
+
+            form.WindowState = FormWindowState.Normal;
+            form.Enabled = true;
+            form.BringToFront();
+            form.Activate();
+
+            FormReference = form;
+        }
+        public void ShowBJPERDAT()
+        {
+            foreach (Form child in this.MdiChildren)
+            {
+                if (child is FormBJPERDAT existing)
+                {
+                    existing.WindowState = FormWindowState.Normal;
+                    existing.BringToFront();
+                    return;
+                }
+            }
+
+            var frm = new FormBJPERDAT
+            {
+                MdiParent = this
+            };
+            frm.Show();
+        }
     }
 }
+
+
+

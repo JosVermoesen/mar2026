@@ -68,10 +68,16 @@
     <ManifestKeyFile>mar2026_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="adodb, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -97,10 +103,10 @@
     <Compile Include="Classes\LoadMain.cs" />
     <Compile Include="Classes\ModLibs.cs" />
     <Compile Include="Classes\SharedGlobals.cs" />
-    <Compile Include="Forms\FormBasisFiche.cs">
+    <Compile Include="SharedForms\FormBasisFiche.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormBasisFiche.Designer.cs">
+    <Compile Include="SharedForms\FormBasisFiche.Designer.cs">
       <DependentUpon>FormBasisFiche.cs</DependentUpon>
     </Compile>
     <Compile Include="SharedForms\FormBJPERDAT.cs">
@@ -129,7 +135,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\FormBasisFiche.resx">
+    <EmbeddedResource Include="SharedForms\FormBasisFiche.resx">
       <DependentUpon>FormBasisFiche.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SharedForms\FormBJPERDAT.resx">
@@ -153,10 +159,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="mar2026_TemporaryKey.pfx" />
     <Content Include="MdX\MARNT.MDV">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="9999.OCT">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

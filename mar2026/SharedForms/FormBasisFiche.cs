@@ -14,6 +14,13 @@ namespace mar2026
         public FormBasisFiche()
         {
             InitializeComponent();
+            // this.MinimumSize = new System.Drawing.Size(327, 149);
+            // this.MaximumSize = new System.Drawing.Size(327, 149);
+        }
+
+        private void ButtonMinimize_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }
