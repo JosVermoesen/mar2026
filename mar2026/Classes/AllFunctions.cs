@@ -958,7 +958,7 @@ namespace mar2026.Classes
                 MIM_GLOBAL_DATE ?? System.DateTime.Now.ToString("dd/MM/yyyy"),
                 "dd/MM/yyyy",
                 System.Globalization.CultureInfo.InvariantCulture);
-            mim.toolStripStatusBookingsDate.Text = bjPerDat.DatumVerwerking.Value.ToString();
+            mim.toolStripBookingDateNow.Text = bjPerDat.DatumVerwerking.Value.ToString();
             
             bjPerDat.CmbPeriodeBoekjaar.Items.Clear();
 

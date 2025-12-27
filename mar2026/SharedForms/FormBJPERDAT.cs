@@ -49,7 +49,7 @@ namespace mar2026
 
             if (Application.OpenForms["FormMim"] is FormMim mim)
             {
-                mim.toolStripStatusBookingsDate.Text = ModLibs.MIM_GLOBAL_DATE;
+                mim.toolStripBookingDateNow.Text = ModLibs.MIM_GLOBAL_DATE;
             }
         }
 

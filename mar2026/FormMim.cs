@@ -42,7 +42,7 @@ namespace mar2026
                 Height = Properties.Settings.Default.MainHeight;
             }
                         
-            toolStripStatusBookingsDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            toolStripBookingDateNow.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
             // PROGRAM_LOCATION = App.Path + "\"
             ModLibs.PROGRAM_LOCATION = Application.StartupPath.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
@@ -87,16 +87,7 @@ namespace mar2026
 
             Cursor = Cursors.WaitCursor;
 
-            // MIM_GLOBAL_DATE = Format(Now, "dd/mm/yyyy")
-            ModLibs.MIM_GLOBAL_DATE = DateTime.Now.ToString("dd/MM/yyyy");
-
-            // Toolbar combo – you already had similar code but VB6 did not set SelectedIndex
-            cmdWegBoekModus.Items.Clear();
-            cmdWegBoekModus.Items.Add("0: Geen BoekingsInfo tonen (EUROTEST niet actief)");
-            cmdWegBoekModus.Items.Add("1: Enkel BoekingsInfo tonen bij EUR<>BEF verschil");
-            cmdWegBoekModus.Items.Add("2: Altijd BoekingsInfo tonen");
-            cmdWegBoekModus.SelectedIndex = 2;
-
+            
             // Load vsoft.ini settings
             // var iniPath = Path.Combine(ModLibs.PROGRAM_LOCATION, "vsoft.ini");
             //if (!File.Exists(iniPath))
@@ -192,16 +183,7 @@ namespace mar2026
                 Application.Exit();
                 return;
             }
-
-            // MIM_GLOBAL_DATE = Format(Now, "dd/mm/yyyy")
-            ModLibs.MIM_GLOBAL_DATE = DateTime.Now.ToString("dd/MM/yyyy");
-            Cursor = Cursors.Default;
-            cmdWegBoekModus.Items.Clear();
-            cmdWegBoekModus.Items.Add("0: Geen BoekingsInfo tonen (EUROTEST niet actief)");
-            cmdWegBoekModus.Items.Add("1: Enkel BoekingsInfo tonen bij EUR<>BEF verschil");
-            cmdWegBoekModus.Items.Add("2: Altijd BoekingsInfo tonen");
-            cmdWegBoekModus.SelectedIndex = 2;
-
+                        
             // Pre-initialize array slots, but do NOT create or show the forms here.
             // They will be created with fixed size in ShowBasisFiche when first used.
             for (int i = 1; i <= 3; i++)
@@ -240,6 +222,23 @@ namespace mar2026
             ModLibs.FormReference = ModLibs.BasisB[1];
             FormReference = null;
             Cursor = Cursors.Default;
+
+
+            string bookInfoMode = LoadText("Algemeen", "BoekInfoModus");
+            if (bookInfoMode == "")
+            {                
+                this.toolStripJournalEntryNow.Text = "Altijd BoekingsInfo tonen";
+
+                SaveText("Algemeen", "BoekInfoModus", "2: Altijd BoekingsInfo tonen");
+            }
+            else
+            {
+                this.toolStripJournalEntryNow.Text = bookInfoMode.Substring(3);
+            }
+                        
+            ModLibs.MIM_GLOBAL_DATE = DateTime.Now.ToString("dd/MM/yyyy");
+            this.toolStripBookingDateNow.Text = ModLibs.MIM_GLOBAL_DATE;
+            Cursor = Cursors.Default;            
 
             // Equivalent of BedrijfOpenen.Show
             var openCompany = new mar2026.Forms.FormOpenCompany
@@ -282,7 +281,7 @@ namespace mar2026
         private void DatumVerwerking_ValueChanged(object sender, EventArgs e)
         {
             // VB6 stored this into MIM_GLOBAL_DATE and copied to BJPERDAT.DatumVerwerking.
-            ModLibs.MIM_GLOBAL_DATE = this.toolStripStatusBookingsDate.Text;
+            ModLibs.MIM_GLOBAL_DATE = this.toolStripBookingDateNow.Text;
         }
 
         private void CmdWegBoekModus_SelectedIndexChanged(object sender, EventArgs e)
@@ -316,16 +315,7 @@ namespace mar2026
             // VB6: Basis_Click Index 4 – AutoUnloadBedrijf, DetectClickOnceShortcut
             MessageBox.Show("MarSync starten: nog te porteren logica (DetectClickOnceShortcut).", "Acties", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
-        private void MenuActiesTaakbalkVergrendeld_Click(object sender, EventArgs e)
-        {
-            // VB6: toggled Basis(6).Checked and enabled/disabled toolbar widgets.
-            bool locked = this.MenuActiesTaakbalkVergrendeld.Checked;
-
-            this.cmdWegBoekModus.Enabled = !locked;
-
-        }
-
+        
         private void MenuActiesTaakbalkZichtbaar_Click(object sender, EventArgs e)
         {
             // VB6: toggled Basis(8).Checked and tbToolBar.Visible, persisted setting.
@@ -629,6 +619,8 @@ namespace mar2026
         }
     }
 }
+
+
 
 
 

@@ -6,7 +6,6 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.ComboBox cmdWegBoekModus;
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem menuActions;
         private System.Windows.Forms.ToolStripMenuItem MenuActionsOpenCompany;
@@ -67,7 +66,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMim));
-            this.cmdWegBoekModus = new System.Windows.Forms.ComboBox();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuActions = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuActionsOpenCompany = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,22 +107,14 @@
             this.menuPeppolValidator = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPeppolDocs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPeppolClickOnce = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusBookingsDate = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripLabelBookingDate = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripBookingDateNow = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripLabelJournalEntry = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripJournalEntryNow = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainMenu.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // cmdWegBoekModus
-            // 
-            this.cmdWegBoekModus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmdWegBoekModus.Enabled = false;
-            this.cmdWegBoekModus.FormattingEnabled = true;
-            this.cmdWegBoekModus.Location = new System.Drawing.Point(378, 49);
-            this.cmdWegBoekModus.Name = "cmdWegBoekModus";
-            this.cmdWegBoekModus.Size = new System.Drawing.Size(367, 21);
-            this.cmdWegBoekModus.TabIndex = 6;
             // 
             // mainMenu
             // 
@@ -141,7 +131,7 @@
             this.menuHelp});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(875, 24);
+            this.mainMenu.Size = new System.Drawing.Size(770, 24);
             this.mainMenu.TabIndex = 11;
             this.mainMenu.Text = "MenuStrip";
             // 
@@ -442,35 +432,50 @@
             this.menuPeppolClickOnce.Size = new System.Drawing.Size(194, 22);
             this.menuPeppolClickOnce.Text = "ClickOnce MarSync";
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.toolStripStatusBookingsDate});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 446);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(875, 22);
-            this.statusStrip1.TabIndex = 13;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabelBookingDate,
+            this.toolStripBookingDateNow,
+            this.toolStripLabelJournalEntry,
+            this.toolStripJournalEntryNow});
+            this.statusStrip.Location = new System.Drawing.Point(0, 399);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(770, 22);
+            this.statusStrip.TabIndex = 13;
+            this.statusStrip.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel1
+            // toolStripLabelBookingDate
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(104, 17);
-            this.toolStripStatusLabel1.Text = "Datum verwerking";
+            this.toolStripLabelBookingDate.Name = "toolStripLabelBookingDate";
+            this.toolStripLabelBookingDate.Size = new System.Drawing.Size(73, 17);
+            this.toolStripLabelBookingDate.Text = "WerkDatum:";
             // 
-            // toolStripStatusBookingsDate
+            // toolStripBookingDateNow
             // 
-            this.toolStripStatusBookingsDate.Name = "toolStripStatusBookingsDate";
-            this.toolStripStatusBookingsDate.Size = new System.Drawing.Size(0, 17);
+            this.toolStripBookingDateNow.BackColor = System.Drawing.SystemColors.Info;
+            this.toolStripBookingDateNow.Name = "toolStripBookingDateNow";
+            this.toolStripBookingDateNow.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStripLabelJournalEntry
+            // 
+            this.toolStripLabelJournalEntry.Name = "toolStripLabelJournalEntry";
+            this.toolStripLabelJournalEntry.Size = new System.Drawing.Size(54, 17);
+            this.toolStripLabelJournalEntry.Text = "Journaal:";
+            // 
+            // toolStripJournalEntryNow
+            // 
+            this.toolStripJournalEntryNow.BackColor = System.Drawing.SystemColors.Info;
+            this.toolStripJournalEntryNow.Name = "toolStripJournalEntryNow";
+            this.toolStripJournalEntryNow.Size = new System.Drawing.Size(81, 17);
+            this.toolStripJournalEntryNow.Text = "2: Altijd tonen";
             // 
             // FormMim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(875, 468);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.cmdWegBoekModus);
+            this.ClientSize = new System.Drawing.Size(770, 421);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.mainMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
@@ -481,8 +486,8 @@
             this.Load += new System.EventHandler(this.FormMim_Load);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -493,9 +498,11 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripCustomers;
         private System.Windows.Forms.ToolStripMenuItem ToolStripSuppliers;
         private System.Windows.Forms.ToolStripMenuItem ToolStripLedgerAccounts;
-        public System.Windows.Forms.StatusStrip statusStrip1;
-        public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        public System.Windows.Forms.ToolStripStatusLabel toolStripStatusBookingsDate;
+        public System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripLabelBookingDate;
+        public System.Windows.Forms.ToolStripStatusLabel toolStripBookingDateNow;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripLabelJournalEntry;
+        public System.Windows.Forms.ToolStripStatusLabel toolStripJournalEntryNow;
     }
 }
 

@@ -17,7 +17,7 @@ namespace Mar2026
         }
 
         private void FormCloudSetting_Load(object sender, EventArgs e)
-        {
+        {            
             // Enable default buttons only when company data location is known
             if (!string.IsNullOrEmpty(LOCATION_COMPANYDATA))
             {
@@ -28,6 +28,32 @@ namespace Mar2026
             {
                 ButtonDefaultResetForOneDrive.Enabled = false;
                 ButtonDefaultResetForMapMarnt.Enabled = false;
+            }
+
+
+            string bookInfoMode = LoadText("Algemeen", "BoekInfoModus");
+            if (bookInfoMode == "")
+            {
+                radioButtonShowAlwaysBookingsInfo.Checked = true;
+            }
+            else
+            {
+                // Map stored mode ("0","1","2") to the proper radio button
+                switch (bookInfoMode.Substring(0, 1))
+                {
+                    case "0":
+                        radioButtonShowNoBookingsInfo.Checked = true;
+                        break;
+                    case "1":
+                        radioButtonShowSomeBookingsInfo.Checked = true;
+                        break;
+                    case "2":
+                        radioButtonShowAlwaysBookingsInfo.Checked = true;
+                        break;
+                    default:
+                        radioButtonShowAlwaysBookingsInfo.Checked = true;
+                        break;
+                }
             }
 
             // Load MimDataLocation from marIntegraal settings
@@ -179,7 +205,7 @@ namespace Mar2026
                         "Cloud instellingen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
-                SaveAndClose();
+                // SaveAndClose();
             }
         }
 
@@ -221,7 +247,7 @@ namespace Mar2026
                     TryCreateFolder(TextBoxCloudMario.Text);
                     TryCreateFolder(TextBoxCloudArchive.Text);
 
-                    SaveAndClose();
+                    // SaveAndClose();
                 }
             }
         }
@@ -258,5 +284,45 @@ namespace Mar2026
         {
             SaveAndClose();
         }
+                        
+        private void radioButtonShowNoBookingsInfo_Click(object sender, EventArgs e)
+        {
+            if (radioButtonShowNoBookingsInfo.Checked)
+            {
+                SaveText("Algemeen", "BoekInfoModus", "0: " + radioButtonShowNoBookingsInfo.Text);
+                // Update the status/toolbar label on the running FormMim
+                if (Application.OpenForms["FormMim"] is FormMim mim)
+                {
+                    mim.toolStripJournalEntryNow.Text = radioButtonShowNoBookingsInfo.Text;
+                }
+            }
+
+        }
+
+        private void radioButtonShowSomeBookingsInfo_Click(object sender, EventArgs e)
+        {
+            if (radioButtonShowSomeBookingsInfo.Checked)
+            {
+                SaveText("Algemeen", "BoekInfoModus", "1: " + radioButtonShowSomeBookingsInfo.Text);
+                // Update the status/toolbar label on the running FormMim
+                if (Application.OpenForms["FormMim"] is FormMim mim)
+                {
+                    mim.toolStripJournalEntryNow.Text = radioButtonShowSomeBookingsInfo.Text;
+                }
+            }
+        }
+
+        private void radioButtonShowAlwaysBookingsInfo_Click(object sender, EventArgs e)
+        {
+            if (radioButtonShowAlwaysBookingsInfo.Checked)
+            {
+                SaveText("Algemeen", "BoekInfoModus", "2: " + radioButtonShowAlwaysBookingsInfo.Text);
+                // Update the status/toolbar label on the running FormMim
+                if (Application.OpenForms["FormMim"] is FormMim mim)
+                {
+                    mim.toolStripJournalEntryNow.Text = radioButtonShowAlwaysBookingsInfo.Text;
+                }
+            }
+        }        
     }
 }
