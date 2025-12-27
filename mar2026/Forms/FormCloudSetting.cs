@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Windows.Forms;
-
-using mar2026;
+﻿using mar2026;
 using mar2026.Classes;
-using static mar2026.Classes.ModLibs;
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using static mar2026.Classes.AllFunctions;
+using static mar2026.Classes.ModLibs;
 
 namespace Mar2026
 {
@@ -156,7 +156,7 @@ namespace Mar2026
 
         private void ButtonDefaultResetForMapMarnt_Click(object sender, EventArgs e)
         {
-            string marNTLocatie = (LoadText(Application.ProductName, "Bedrijfsinhoudsopgave" + "2025") ?? string.Empty).ToLowerInvariant();
+            string marNTLocatie = (LoadText(Application.ProductName, "Bedrijfsinhoudsopgave2025") ?? string.Empty).ToLowerInvariant();
             marNTLocatie = marNTLocatie.Replace("\\data", string.Empty);
 
             string serverMap = (LoadText(Application.ProductName, "ServerBedrijfsinhoudsopgave") ?? string.Empty).Trim().ToLowerInvariant();
@@ -175,37 +175,17 @@ namespace Mar2026
 
             string confirm = "Akkoord voor:\n" + 
                              "CLOUD   MARNT: " + marNTLocatie + " (dus dezelfde hoofdmap)\n" + 
-                             "CLOUD   MARIO: " + System.IO.Path.Combine(marNTLocatie, "manueel\n") + 
-                             "CLOUD ARCHIEF: " + System.IO.Path.Combine(marNTLocatie, "archief\n");
+                             "CLOUD   MARIO: " + Path.Combine(marNTLocatie, "manueel") + "\n" +
+                             "CLOUD ARCHIEF: " + Path.Combine(marNTLocatie, "archief");
 
             if (MessageBox.Show(confirm, "Cloud instellingen", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
                 TextBoxCloudMarnt.Text = marNTLocatie;
-                TextBoxCloudMario.Text = System.IO.Path.Combine(marNTLocatie, "manueel");
-                TextBoxCloudArchive.Text = System.IO.Path.Combine(marNTLocatie, "archief");
-
-                try
-                {
-                    FS.CreateFolder(TextBoxCloudMario.Text);
-                }
-                catch
-                {
-                    MessageBox.Show("Map bestaat reeds:\n\n"                        
-                        + TextBoxCloudMario.Text,
-                        "Cloud instellingen", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-                try
-                {
-                    FS.CreateFolder(TextBoxCloudArchive.Text);
-                }
-                catch
-                {
-                    MessageBox.Show("Map bestaat reeds\n\n" + TextBoxCloudArchive.Text,
-                        "Cloud instellingen", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-                // SaveAndClose();
+                TextBoxCloudMario.Text = Path.Combine(marNTLocatie, "manueel");
+                TextBoxCloudArchive.Text = Path.Combine(marNTLocatie, "archief");
+                                
+                TryCreateFolder(TextBoxCloudMario.Text);
+                TryCreateFolder(TextBoxCloudArchive.Text);
             }
         }
 
@@ -233,21 +213,19 @@ namespace Mar2026
                 string msg = "Dit is een toestel met 'OneDrive' Map ideaal voor automatische\n" +
                              "archivering naar de CLOUD.\n\n" + 
                              "Akkoord voor:" + Environment.NewLine +
-                             "CLOUD   MARNT: " + System.IO.Path.Combine(systemPersonalDocs, "marNT") + "\n" +
-                             "CLOUD   MARIO: " + System.IO.Path.Combine(systemPersonalDocs, "marNT", "manueel") + "\n" +
-                             "CLOUD ARCHIEF: " + System.IO.Path.Combine(systemPersonalDocs, "marNT", "archief");
+                             "CLOUD   MARNT: " + Path.Combine(systemPersonalDocs, "marNT") + "\n" +
+                             "CLOUD   MARIO: " + Path.Combine(systemPersonalDocs, "marNT", "manueel") + "\n" +
+                             "CLOUD ARCHIEF: " + Path.Combine(systemPersonalDocs, "marNT", "archief");
 
                 if (MessageBox.Show(msg, "Cloud instellingen", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {
-                    TextBoxCloudMarnt.Text = System.IO.Path.Combine(systemPersonalDocs, "marNT");
-                    TextBoxCloudMario.Text = System.IO.Path.Combine(systemPersonalDocs, "marNT", "manueel");
-                    TextBoxCloudArchive.Text = System.IO.Path.Combine(systemPersonalDocs, "marNT", "archief");
+                    TextBoxCloudMarnt.Text = Path.Combine(systemPersonalDocs, "marNT");
+                    TextBoxCloudMario.Text = Path.Combine(systemPersonalDocs, "marNT", "manueel");
+                    TextBoxCloudArchive.Text = Path.Combine(systemPersonalDocs, "marNT", "archief");
 
                     TryCreateFolder(TextBoxCloudMarnt.Text);
                     TryCreateFolder(TextBoxCloudMario.Text);
                     TryCreateFolder(TextBoxCloudArchive.Text);
-
-                    // SaveAndClose();
                 }
             }
         }
@@ -256,15 +234,20 @@ namespace Mar2026
         {
             try
             {
-                FS.CreateFolder(path);
+                // Creates all directories in the specified path if they do not already exist.
+                // Does NOT throw if the folder already exists.
+                Directory.CreateDirectory(path);
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Map bestaat reeds\n\n" + path,
-                    "Cloud instellingen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    "Fout bij aanmaken map:\n\n" + path + "\n\nDetails:\n" + ex.Message,
+                    "Cloud instellingen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
-                
+
         private void ButtonClose_Click(object sender, EventArgs e)
         {
             Close();
