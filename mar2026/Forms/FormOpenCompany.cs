@@ -223,7 +223,7 @@ namespace mar2026.Forms
         }
 
         private void ListViewCompanies_DoubleClick(object sender, EventArgs e)
-        {
+        {            
             DoOpenCompany();
         }
                 
@@ -241,6 +241,9 @@ namespace mar2026.Forms
             string folder = item.SubItems[1].Text;
 
             LOCATION_COMPANYDATA = LOCATION_ + folder + "\\";
+            SharedGlobals.SetMimDataLocation(LOCATION_COMPANYDATA);
+
+
             if (Application.OpenForms["FormMim"] is FormMim mim)
             {
                 mim.Text = Application.ProductName + " - [" + item.Text.Trim() + "]";

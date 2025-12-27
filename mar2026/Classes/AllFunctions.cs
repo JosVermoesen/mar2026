@@ -1955,9 +1955,133 @@ namespace mar2026.Classes
                 return string.Empty;
             }
         }
-                
-                
-                
+
+        public static string DATE_KEY(string datumfTXT)
+        {
+            if (string.IsNullOrEmpty(datumfTXT) || datumfTXT.Length < 10)
+                return string.Empty;
+
+            string dag = datumfTXT.Substring(0, 2);
+            string maand = datumfTXT.Substring(3, 2);
+            string jaar = datumfTXT.Substring(6, 4);
+
+            // YYYYMMDD as string, like VB6
+            return jaar + maand + dag;
+        }
+
+        public static bool DATE_CHECK(string fDatum, int fVlag)
+        {
+            if (string.IsNullOrEmpty(fDatum))
+                return false;
+
+            // Strip all '/'
+            string gDatum = fDatum.Replace("/", string.Empty);
+            if (gDatum.Length < 8)
+                return false;
+
+            string dag = string.Empty;
+            string maand = string.Empty;
+            string jaar = string.Empty;
+
+            switch (fVlag)
+            {
+                case PERIODAS_TEXT:
+                case BOOKYEARAS_TEXT:
+                    dag = gDatum.Substring(0, 2);
+                    maand = gDatum.Substring(2, 2);
+                    jaar = gDatum.Substring(4, 4);
+                    break;
+
+                case PERIODAS_KEY:
+                case BOOKYEARAS_KEY:
+                    jaar = gDatum.Substring(0, 4);
+                    maand = gDatum.Substring(4, 2);
+                    dag = gDatum.Substring(6, 2);
+                    break;
+
+                default:
+                    MessageBox.Show("Datum onjuist !");
+                    return false;
+            }
+
+            string sleutel = jaar + maand + dag;
+
+            switch (fVlag)
+            {
+                case PERIODAS_TEXT:
+                case PERIODAS_KEY:
+                    if (string.IsNullOrEmpty(PERIOD_FROMTO) || PERIOD_FROMTO.Length < 16)
+                        return false;
+                    return string.Compare(sleutel, PERIOD_FROMTO.Substring(0, 8), StringComparison.Ordinal) >= 0 &&
+                           string.Compare(sleutel, PERIOD_FROMTO.Substring(PERIOD_FROMTO.Length - 8, 8), StringComparison.Ordinal) <= 0;
+
+                case BOOKYEARAS_TEXT:
+                case BOOKYEARAS_KEY:
+                    if (string.IsNullOrEmpty(BOOKYEAR_FROMTO) || BOOKYEAR_FROMTO.Length < 16)
+                        return false;
+                    return string.Compare(sleutel, BOOKYEAR_FROMTO.Substring(0, 8), StringComparison.Ordinal) >= 0 &&
+                           string.Compare(sleutel, BOOKYEAR_FROMTO.Substring(BOOKYEAR_FROMTO.Length - 8, 8), StringComparison.Ordinal) <= 0;
+
+                default:
+                    return false;
+            }
+        }
+
+        public static string DATE_TEXT(string dateAsKey)
+        {
+            if (string.IsNullOrEmpty(dateAsKey) || dateAsKey.Length < 8)
+                return string.Empty;
+
+            string day = dateAsKey.Substring(6, 2);
+            string month = dateAsKey.Substring(4, 2);
+            string year = dateAsKey.Substring(0, 4);
+            return day + "/" + month + "/" + year;
+        }
+
+        public static void CloseOpenWindows()
+        {
+            // Safe VB6 CloseOpenWindows equivalent: close known forms if they are open.
+            try
+            {
+                // Specific forms from VB6 can be re‑enabled once their C# types exist:
+                // if (Application.OpenForms["SqlSearch"] is Form sqlSearch) sqlSearch.Close();
+                // if (Application.OpenForms["Xlog"] is Form xlog) xlog.Close();
+                // if (Application.OpenForms["SetupEnParameters"] is Form setup) setup.Close();
+                // if (Application.OpenForms["Afbeeldingen"] is Form afbeeldingen) afbeeldingen.Close();
+                // if (Application.OpenForms["xDokument"] is Form xDok) xDok.Close();
+                // if (Application.OpenForms["VrijBericht"] is Form vrijBericht) vrijBericht.Close();
+                // if (Application.OpenForms["HistoriekSQL"] is Form historiekSql) historiekSql.Close();
+                // if (Application.OpenForms["SQLLijsten"] is Form sqlLijsten) sqlLijsten.Close();
+                // if (Application.OpenForms["Venster"] is Form venster) venster.Close();
+                // if (Application.OpenForms["DirekteAankoop"] is Form direkteAankoop) direkteAankoop.Close();
+                // if (Application.OpenForms["DirekteVerkoop"] is Form direkteVerkoop) direkteVerkoop.Close();
+                // if (Application.OpenForms["DiversePosten"] is Form diversePosten) diversePosten.Close();
+                // if (Application.OpenForms["InbrengFinancieel"] is Form inbrengFinancieel) inbrengFinancieel.Close();
+
+                // Generic fallback: close all open forms except the main FormMim if present.
+                foreach (Form openForm in Application.OpenForms)
+                {
+                    if (openForm is FormMim)
+                        continue; // keep main window open
+
+                    try
+                    {
+                        openForm.Close();
+                    }
+                    catch
+                    {
+                        // Mimic VB6 'On Error Resume Next'
+                    }
+                }
+            }
+            catch
+            {
+                // Outer safety net; also mimics 'On Error Resume Next'
+            }
+        }
+
+
+
 
         public static object OWaarde(object dbWaarde)
         {

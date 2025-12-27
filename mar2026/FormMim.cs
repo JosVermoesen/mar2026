@@ -43,6 +43,7 @@ namespace mar2026
             }
                         
             toolStripBookingDateNow.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            SharedGlobals.SetRdt(DateTime.Now);
 
             // PROGRAM_LOCATION = App.Path + "\"
             ModLibs.PROGRAM_LOCATION = Application.StartupPath.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;

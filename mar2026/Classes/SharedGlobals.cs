@@ -1,4 +1,6 @@
-﻿namespace mar2026
+﻿using System;
+
+namespace mar2026
 {
     public static class SharedGlobals
     {
@@ -49,6 +51,8 @@
             NotificationsReceiverALL = "";
 
             NotificationsServerALL = "";
+
+
         } // default values
         public static string NotificationsServerALL { get; set; } // default values
         public static string NotificationsSenderALL { get; set; } // default values
@@ -96,5 +100,19 @@
         {
             MarntMdvLocation = newString;
         }
+        public static string MimActiveBookPeriodText { get; set; }
+        public static string MimActiveBookPeriod { get; private set; }
+        public static void SetMimActiveBookPeriod(string newString)
+        {
+            MimActiveBookPeriod = newString;
+        }
+        public static string MimActiveBookYearText { get; set; }
+
+        public static DateTime Rdt { get; private set; }
+        public static void SetRdt(DateTime newDateTime)
+        {
+            Rdt = newDateTime;
+        }
+        public static bool MimLoadingNewCompany { get; set; }
     }
 }

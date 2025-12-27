@@ -27,6 +27,8 @@ namespace mar2026.Classes
                         
             XisEUROWasBEF = false;
 
+            SharedGlobals.MimLoadingNewCompany = true;
+
             // Menus/toolbars: enable a minimal subset (adjust when you port more).
             // VB6 enabled MenuTitel(1..5), BasisB(1..4), Basis(11).
             // Here we assume corresponding menu items already exist on FormMim.
