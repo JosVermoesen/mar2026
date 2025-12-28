@@ -246,6 +246,7 @@
             this.MenuCascadeOpenForms.Name = "MenuCascadeOpenForms";
             this.MenuCascadeOpenForms.Size = new System.Drawing.Size(202, 22);
             this.MenuCascadeOpenForms.Text = "&Trapsgewijs";
+            this.MenuCascadeOpenForms.Visible = false;
             this.MenuCascadeOpenForms.Click += new System.EventHandler(this.MenuWindowCascade_Click);
             // 
             // MenuTileOpenFormsVertical
@@ -253,6 +254,7 @@
             this.MenuTileOpenFormsVertical.Name = "MenuTileOpenFormsVertical";
             this.MenuTileOpenFormsVertical.Size = new System.Drawing.Size(202, 22);
             this.MenuTileOpenFormsVertical.Text = "&Onder elkaar";
+            this.MenuTileOpenFormsVertical.Visible = false;
             this.MenuTileOpenFormsVertical.Click += new System.EventHandler(this.MenuWindowTileVertical_Click);
             // 
             // MenuTileOpenFormsHorizontal
@@ -260,6 +262,7 @@
             this.MenuTileOpenFormsHorizontal.Name = "MenuTileOpenFormsHorizontal";
             this.MenuTileOpenFormsHorizontal.Size = new System.Drawing.Size(202, 22);
             this.MenuTileOpenFormsHorizontal.Text = "&Naast elkaar";
+            this.MenuTileOpenFormsHorizontal.Visible = false;
             this.MenuTileOpenFormsHorizontal.Click += new System.EventHandler(this.MenuWindowTileHorizontal_Click);
             // 
             // MenuArrangeOpenForms
@@ -267,6 +270,7 @@
             this.MenuArrangeOpenForms.Name = "MenuArrangeOpenForms";
             this.MenuArrangeOpenForms.Size = new System.Drawing.Size(202, 22);
             this.MenuArrangeOpenForms.Text = "&Pictogrammen schikken";
+            this.MenuArrangeOpenForms.Visible = false;
             this.MenuArrangeOpenForms.Click += new System.EventHandler(this.MenuWindowArrangeIcons_Click);
             // 
             // MenuListOpenForms

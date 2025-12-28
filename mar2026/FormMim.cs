@@ -1,4 +1,5 @@
-﻿using mar2026.Classes;
+﻿using DAO;
+using mar2026.Classes;
 using Mar2026;
 using System;
 using System.Data;
@@ -524,17 +525,17 @@ namespace mar2026
         
         private void ToolStripCustomers_Click(object sender, EventArgs e)
         {
-            ShowBasisFiche(1);
+            BasisB[1].WindowState = FormWindowState.Normal;
         }
 
         private void ToolStripSuppliers_Click(object sender, EventArgs e)
         {
-            ShowBasisFiche(2);
+            BasisB[2].WindowState = FormWindowState.Normal;
         }
 
         private void ToolStripLedgerAccounts_Click(object sender, EventArgs e)
         {
-            ShowBasisFiche(3);
+            BasisB[3].WindowState = FormWindowState.Normal;
         }
 
         private void MenuListOpenForms_DropDownOpening(object sender, EventArgs e)
@@ -554,52 +555,7 @@ namespace mar2026
                 menu.DropDownItems.Add(item);
             }
         }
-
-        private void ShowBasisFiche(int index)
-        {
-            if (index < 1 || index > 3)
-                return;
-
-            if (BasisB[index] == null || BasisB[index].IsDisposed)
-            {
-                BasisB[index] = new FormBasisFiche
-                {
-                    MdiParent = this
-                };
-
-                switch (index)
-                {
-                    case 1:
-                        BasisB[1].Text = "Fiche Klanten";
-                        BasisB[1].BackColor = System.Drawing.Color.Blue;
-                        break;
-                    case 2:
-                        BasisB[2].Text = "Fiche Leveranciers";
-                        BasisB[2].BackColor = System.Drawing.Color.Red;
-                        break;
-                    case 3:
-                        BasisB[3].Text = "Rekening Fiche";
-                        BasisB[3].BackColor = System.Drawing.Color.White;
-                        break;
-                }
-
-                BasisB[index].Show();
-            }
-
-            var form = BasisB[index];
-
-            // Force fixed size every time you show/activate
-            form.MinimumSize = new System.Drawing.Size(327, 149);
-            form.MaximumSize = new System.Drawing.Size(327, 149);
-            form.Size = new System.Drawing.Size(327, 149);
-
-            form.WindowState = FormWindowState.Normal;
-            form.Enabled = true;
-            form.BringToFront();
-            form.Activate();
-
-            FormReference = form;
-        }
+                
         public void ShowBJPERDAT()
         {
             foreach (Form child in this.MdiChildren)
