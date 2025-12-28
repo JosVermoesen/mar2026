@@ -58,7 +58,7 @@ namespace mar2026
             this.ButtonFirst.Size = new System.Drawing.Size(63, 23);
             this.ButtonFirst.TabIndex = 1;
             this.ButtonFirst.Text = "&Eerste";
-            this.ButtonFirst.UseVisualStyleBackColor = true;
+            this.ButtonFirst.UseVisualStyleBackColor = true;            
             // 
             // MasketEditBoxInfo
             // 
@@ -74,7 +74,7 @@ namespace mar2026
             this.ButtonLast.Size = new System.Drawing.Size(63, 23);
             this.ButtonLast.TabIndex = 3;
             this.ButtonLast.Text = "&Laatste";
-            this.ButtonLast.UseVisualStyleBackColor = true;
+            this.ButtonLast.UseVisualStyleBackColor = true;            
             // 
             // ButtonPrev
             // 
@@ -83,7 +83,7 @@ namespace mar2026
             this.ButtonPrev.Size = new System.Drawing.Size(63, 23);
             this.ButtonPrev.TabIndex = 5;
             this.ButtonPrev.Text = "&Vorige";
-            this.ButtonPrev.UseVisualStyleBackColor = true;
+            this.ButtonPrev.UseVisualStyleBackColor = true;            
             // 
             // ButtonNext
             // 
@@ -92,7 +92,7 @@ namespace mar2026
             this.ButtonNext.Size = new System.Drawing.Size(63, 23);
             this.ButtonNext.TabIndex = 4;
             this.ButtonNext.Text = "&Volgende";
-            this.ButtonNext.UseVisualStyleBackColor = true;
+            this.ButtonNext.UseVisualStyleBackColor = true;            
             // 
             // ButtonMinimize
             // 
@@ -121,7 +121,7 @@ namespace mar2026
             this.ButtonEdit.Size = new System.Drawing.Size(93, 23);
             this.ButtonEdit.TabIndex = 8;
             this.ButtonEdit.Text = "&Bewerken";
-            this.ButtonEdit.UseVisualStyleBackColor = true;
+            this.ButtonEdit.UseVisualStyleBackColor = true;            
             // 
             // ButtonRemove
             // 
@@ -140,7 +140,7 @@ namespace mar2026
             this.ButtonSearchOn.Size = new System.Drawing.Size(93, 23);
             this.ButtonSearchOn.TabIndex = 10;
             this.ButtonSearchOn.Text = "&Zoeken op ...";
-            this.ButtonSearchOn.UseVisualStyleBackColor = true;
+            this.ButtonSearchOn.UseVisualStyleBackColor = true;            
             // 
             // FormBasisFiche
             // 
@@ -165,7 +165,7 @@ namespace mar2026
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "BasisFiche";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;            
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.ResumeLayout(false);
             this.PerformLayout();
 

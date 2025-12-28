@@ -101,7 +101,9 @@
     <Compile Include="Classes\AutoLoadCompany.cs" />
     <Compile Include="Classes\BrokerTools.cs" />
     <Compile Include="Classes\LoadMain.cs" />
+    <Compile Include="Classes\ModDatabase.cs" />
     <Compile Include="Classes\ModLibs.cs" />
+    <Compile Include="Classes\ModMim.cs" />
     <Compile Include="Classes\SharedGlobals.cs" />
     <Compile Include="SharedForms\FormBasisFiche.cs">
       <SubType>Form</SubType>
@@ -219,6 +221,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\VB_NET\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

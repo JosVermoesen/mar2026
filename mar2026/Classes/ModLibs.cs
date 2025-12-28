@@ -10,6 +10,10 @@ namespace mar2026.Classes
 {
     public static class ModLibs
     {
+        // mar2026/Classes/ModLibs.cs, inside ModLibs
+        public static FormBasisFiche CUSTOMERS_SHEET;
+        public static FormBasisFiche SUPPLIERS_SHEET;
+        public static FormBasisFiche LEDGERACCOUNTS_SHEET;
 
         // Mijn dokumenten, ApplicatieData
         public const int CSIDL_PERSONAL = 0x5;
@@ -151,6 +155,7 @@ namespace mar2026.Classes
         public static int KTRL;
         public static int KTRL_LONG;
         public static int A_INDEX;
+        public static int SHARED_INDEX;
         public static int ACTIVE_SHEET;
 
         public static bool BL_ENVIRONMENT;

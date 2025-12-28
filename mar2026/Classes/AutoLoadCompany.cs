@@ -120,7 +120,7 @@ namespace mar2026.Classes
                     // Use selected text for TABLE_COUNTERS name
                     if (bjPerDat.CmbBoekjaar.SelectedItem is string jaarText)
                     {
-                        bstNaam[TABLE_COUNTERS] = "jr" + jaarText;
+                        JET_TABLENAME[TABLE_COUNTERS] = "jr" + jaarText;
                     }
 
                     // Load periods for active bookyear from DEFxx.OCT

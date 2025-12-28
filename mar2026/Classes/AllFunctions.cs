@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using static mar2026.Classes.AutoLoadCompany;
 using static mar2026.Classes.ModLibs;
+using static mar2026.Classes.ModDatabase;
 
 namespace mar2026.Classes
 {
@@ -93,131 +94,131 @@ namespace mar2026.Classes
             }
         }
 
-        public static bool AdoNewRecord(int fl)
-        {
-            TLB_RECORD[fl] = string.Empty;
+        //public static bool AdoNewRecord(int fl)
+        //{
+        //    TLB_RECORD[fl] = string.Empty;
 
-            switch (fl)
-            {
-                case TABLE_CUSTOMERS:
-                case TABLE_SUPPLIERS:
-                    // Taalkode
-                    AdoInsertToRecord((int)fl, "2", "A10C");
-                    // Landnummer ISO kode
-                    AdoInsertToRecord((int)fl, "002", "v149");
-                    // Landkode Postkantoor
-                    AdoInsertToRecord((int)fl, "B  ", "A109");
-                    // Landkode ISO kode
-                    AdoInsertToRecord((int)fl, "BE", "v150");
-                    // Munteenheid ISO kode
-                    AdoInsertToRecord((int)fl, BH_EURO ? "EUR" : "BEF", "vs03");
-                    // exemplaren dokumenten
-                    AdoInsertToRecord((int)fl, "1", "vs07");
-                    break;
+        //    switch (fl)
+        //    {
+        //        case TABLE_CUSTOMERS:
+        //        case TABLE_SUPPLIERS:
+        //            // Taalkode
+        //            AdoInsertToRecord((int)fl, "2", "A10C");
+        //            // Landnummer ISO kode
+        //            AdoInsertToRecord((int)fl, "002", "v149");
+        //            // Landkode Postkantoor
+        //            AdoInsertToRecord((int)fl, "B  ", "A109");
+        //            // Landkode ISO kode
+        //            AdoInsertToRecord((int)fl, "BE", "v150");
+        //            // Munteenheid ISO kode
+        //            AdoInsertToRecord((int)fl, BH_EURO ? "EUR" : "BEF", "vs03");
+        //            // exemplaren dokumenten
+        //            AdoInsertToRecord((int)fl, "1", "vs07");
+        //            break;
 
-                case TABLE_LEDGERACCOUNTS:
-                    // Budgetcode
-                    AdoInsertToRecord((int)fl, "O", "v032");
-                    break;
+        //        case TABLE_LEDGERACCOUNTS:
+        //            // Budgetcode
+        //            AdoInsertToRecord((int)fl, "O", "v032");
+        //            break;
 
-                case TABLE_PRODUCTS:
-                    // These rely on helper functions fmarBoxText/String99; stubbed for now.
-                    // vBib Fl, fmarBoxText("004", "2", "0"), "v106"
-                    // vBib Fl, Dec$(1, "#####.00"), "v107"
-                    // vBib Fl, fmarBoxText("022", "2", "N"), "v108"
-                    // vBib Fl, fmarBoxText("002", "2", String99(READING, 183)), "v111"
-                    // vBib Fl, String99(READING, 77), "v116"
-                    // vBib Fl, String99(READING, 78), "v117"
-                    // vBib Fl, String99(READING, 79), "v118"
-                    break;
-            }
+        //        case TABLE_PRODUCTS:
+        //            // These rely on helper functions fmarBoxText/String99; stubbed for now.
+        //            // vBib Fl, fmarBoxText("004", "2", "0"), "v106"
+        //            // vBib Fl, Dec$(1, "#####.00"), "v107"
+        //            // vBib Fl, fmarBoxText("022", "2", "N"), "v108"
+        //            // vBib Fl, fmarBoxText("002", "2", String99(READING, 183)), "v111"
+        //            // vBib Fl, String99(READING, 77), "v116"
+        //            // vBib Fl, String99(READING, 78), "v117"
+        //            // vBib Fl, String99(READING, 79), "v118"
+        //            break;
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public static string SetSpacing(string fTekst, int fLengte)
-        {
-            string b = fTekst.Length > fLengte
-                ? fTekst.Substring(0, fLengte)
-                : fTekst;
+        //public static string SetSpacing(string fTekst, int fLengte)
+        //{
+        //    string b = fTekst.Length > fLengte
+        //        ? fTekst.Substring(0, fLengte)
+        //        : fTekst;
 
-            return b + new string(' ', fLengte - b.Length);
-        }
+        //    return b + new string(' ', fLengte - b.Length);
+        //}
 
-        public static void AdoInsertToRecord(int fl, string fieldString1, string fieldString2)
-        {
-            int TBStart;
-            int TBStop;
-            // replace positions 1-5 (0-based 1..5) with fieldString2
-            string TBCode = "#" + fieldString2.PadRight(5).Substring(0, 5) + "#";
+        //public static void AdoInsertToRecord(int fl, string fieldString1, string fieldString2)
+        //{
+        //    int TBStart;
+        //    int TBStop;
+        //    // replace positions 1-5 (0-based 1..5) with fieldString2
+        //    string TBCode = "#" + fieldString2.PadRight(5).Substring(0, 5) + "#";
 
-            if (string.IsNullOrEmpty(fieldString1))
-                fieldString1 = " ";
+        //    if (string.IsNullOrEmpty(fieldString1))
+        //        fieldString1 = " ";
 
-            jump:
-            if (TLB_RECORD[fl].IndexOf(TBCode, System.StringComparison.Ordinal) < 0)
-            {
-                TLB_RECORD[fl] += TBCode + fieldString1 + "#";
-            }
-            else
-            {
-                if (AdoGetField(fl, TBCode).TrimEnd() == fieldString1)
-                {
-                    return;
-                }
+        //    jump:
+        //    if (TLB_RECORD[fl].IndexOf(TBCode, System.StringComparison.Ordinal) < 0)
+        //    {
+        //        TLB_RECORD[fl] += TBCode + fieldString1 + "#";
+        //    }
+        //    else
+        //    {
+        //        if (AdoGetField(fl, TBCode).TrimEnd() == fieldString1)
+        //        {
+        //            return;
+        //        }
 
-                TBStart = (int)(TLB_RECORD[fl].IndexOf(TBCode, System.StringComparison.Ordinal) + 1); // VB is 1-based
-                TBStop = (int)TLB_RECORD[fl].IndexOf("#", TBStart + 7 - 1, System.StringComparison.Ordinal);
+        //        TBStart = (int)(TLB_RECORD[fl].IndexOf(TBCode, System.StringComparison.Ordinal) + 1); // VB is 1-based
+        //        TBStop = (int)TLB_RECORD[fl].IndexOf("#", TBStart + 7 - 1, System.StringComparison.Ordinal);
 
-                // emulate VB Left/Right remove segment
-                string leftPart = TLB_RECORD[fl].Substring(0, TBStart - 1);
-                string rightPart = TLB_RECORD[fl].Substring(TBStop);
-                TLB_RECORD[fl] = leftPart + rightPart;
+        //        // emulate VB Left/Right remove segment
+        //        string leftPart = TLB_RECORD[fl].Substring(0, TBStart - 1);
+        //        string rightPart = TLB_RECORD[fl].Substring(TBStop);
+        //        TLB_RECORD[fl] = leftPart + rightPart;
 
-                goto jump;
-            }
-        }
+        //        goto jump;
+        //    }
+        //}
 
-        public static string AdoGetField(int fl, string TBS)
-        {
-            string tbsHere = string.Empty;
+        //public static string AdoGetField(int fl, string TBS)
+        //{
+        //    string tbsHere = string.Empty;
 
-            if (TBS.Length == 7 && TBS[0] == '#')
-            {
-                tbsHere = TBS;
-            }
-            else if (TBS.Length == 6)
-            {
-                // "#     #", then insert 4 chars from TBS(2-5)
-                string mid = TBS.Substring(1, 4);
-                tbsHere = "#" + mid.PadRight(5).Substring(0, 5) + "#";
-            }
-            else
-            {
-                System.Diagnostics.Debugger.Break();
-            }
+        //    if (TBS.Length == 7 && TBS[0] == '#')
+        //    {
+        //        tbsHere = TBS;
+        //    }
+        //    else if (TBS.Length == 6)
+        //    {
+        //        // "#     #", then insert 4 chars from TBS(2-5)
+        //        string mid = TBS.Substring(1, 4);
+        //        tbsHere = "#" + mid.PadRight(5).Substring(0, 5) + "#";
+        //    }
+        //    else
+        //    {
+        //        System.Diagnostics.Debugger.Break();
+        //    }
 
-            if (string.IsNullOrEmpty(TLB_RECORD[fl]))
-                return string.Empty;
+        //    if (string.IsNullOrEmpty(TLB_RECORD[fl]))
+        //        return string.Empty;
 
-            try
-            {
-                int pos = TLB_RECORD[fl].IndexOf(tbsHere, System.StringComparison.Ordinal);
-                if (pos < 0)
-                    return string.Empty;
+        //    try
+        //    {
+        //        int pos = TLB_RECORD[fl].IndexOf(tbsHere, System.StringComparison.Ordinal);
+        //        if (pos < 0)
+        //            return string.Empty;
 
-                int start = pos + 7;
-                int end = TLB_RECORD[fl].IndexOf("#", start, System.StringComparison.Ordinal);
-                if (end < 0)
-                    return string.Empty;
+        //        int start = pos + 7;
+        //        int end = TLB_RECORD[fl].IndexOf("#", start, System.StringComparison.Ordinal);
+        //        if (end < 0)
+        //            return string.Empty;
 
-                return TLB_RECORD[fl].Substring(start, end - start);
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+        //        return TLB_RECORD[fl].Substring(start, end - start);
+        //    }
+        //    catch
+        //    {
+        //        return string.Empty;
+        //    }
+        //}
 
         // VB6 daoBlankoRecord: initialise TLB_RECORD defaults for a table.
         public static bool DaoBlankoRecord(int fl)
@@ -440,12 +441,7 @@ namespace mar2026.Classes
             // Keep your existing C# JetTableOpen implementation.
             throw new System.NotImplementedException();
         }
-
-        public static void JetGetFirst(int fl, int fIndex)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        
         public static void JetTableClose(int fl)
         {
             throw new System.NotImplementedException();
@@ -1513,9 +1509,9 @@ namespace mar2026.Classes
             //    try
             //    {
             //        // Phase 1: collect all existing index names from ntDB.TableDefs(bstNaam(t)).Indexes
-            //        if (NT_DB != null && !string.IsNullOrEmpty(bstNaam[t]))
+            //        if (NT_DB != null && !string.IsNullOrEmpty(JET_TABLENAME[t]))
             //        {
-            //            foreach (var idx in NT_DB.TableDefs[bstNaam[t]].Indexes)
+            //            foreach (var idx in NT_DB.TableDefs[JET_TABLENAME[t]].Indexes)
             //            {
             //                var daoIndex = (DAO.Index)idx;
             //                aa += daoIndex.Name + ";";
@@ -1554,7 +1550,7 @@ namespace mar2026.Classes
             //        else
             //        {
             //            MessageBox.Show(
-            //                "Index '" + caption + "' van tabel '" + bstNaam[t] + "' bestaat niet meer !!!",
+            //                "Index '" + caption + "' van tabel '" + JET_TABLENAME[t] + "' bestaat niet meer !!!",
             //                "InitBestanden",
             //                MessageBoxButtons.OK,
             //                MessageBoxIcon.Warning);

@@ -203,16 +203,19 @@ namespace mar2026
                         case 1:
                             ModLibs.BasisB[1].Text = "Fiche Klanten";
                             ModLibs.BasisB[1].BackColor = System.Drawing.Color.Blue;
+                            
                             break;
 
                         case 2:
                             ModLibs.BasisB[2].Text = "Fiche Leveranciers";
                             ModLibs.BasisB[2].BackColor = System.Drawing.Color.Red;
+                            
                             break;
 
                         case 3:
                             ModLibs.BasisB[3].Text = "Rekening Fiche";
                             ModLibs.BasisB[3].BackColor = System.Drawing.Color.White;
+                            
                             break;
                     }
                     // Show as MDI child, minimized and disabled at startup
@@ -407,13 +410,7 @@ namespace mar2026
         {
             ShellExecuteWithFallback("https://clickonce.vsoft.be/MarSync/publish.htm");
         }
-
-                
-        public static string VSet(string text, short length)
-        {
-            return SetSpacing(text ?? string.Empty, length);
-        }
-
+                                
         private void MenuWindowCascade_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
@@ -486,6 +483,17 @@ namespace mar2026
             bstNaam[TABLE_CONTRACTS] = "Polissen";      // 07
             bstNaam[TABLE_DUMMY] = "TmpBestand";    // 08
             bstNaam[TABLE_COUNTERS] = "Tell";          // 09
+
+            JET_TABLENAME[TABLE_VARIOUS] = "Allerlei";      // 00
+            JET_TABLENAME[TABLE_CUSTOMERS] = "Klanten";       // 01
+            JET_TABLENAME[TABLE_SUPPLIERS] = "Leveranciers";  // 02
+            JET_TABLENAME[TABLE_LEDGERACCOUNTS] = "Rekeningen";    // 03
+            JET_TABLENAME[TABLE_PRODUCTS] = "Produkten";     // 04
+            JET_TABLENAME[TABLE_JOURNAL] = "Journalen";     // 05
+            JET_TABLENAME[TABLE_INVOICES] = "dokumenten";    // 06
+            JET_TABLENAME[TABLE_CONTRACTS] = "Polissen";      // 07
+            JET_TABLENAME[TABLE_DUMMY] = "TmpBestand";    // 08
+            JET_TABLENAME[TABLE_COUNTERS] = "Tell";          // 09
 
             DAYS_IN_MONTH[1] = 31;
             DAYS_IN_MONTH[2] = 29;
