@@ -88,7 +88,6 @@ namespace mar2026.Classes
         public static string MASK_2002; // VB: Fixed-length 10
         public static bool VSF_PRO;
 
-        public static string APPLICATION_PRINTER;
         public static string[] SYS_VAR = new string[7]; // 0..6
         public static int[] FILE_NR = new int[NUMBER_TABLES + 1]; // 0..9
         public static string[] TLB_RECORD = new string[NUMBER_TABLES + 1];
@@ -101,6 +100,15 @@ namespace mar2026.Classes
         public static int[,] FLINDEX_LEN = new int[NUMBER_TABLES + 1, 11];
         public static string[,] FLINDEX_CAPTION = new string[NUMBER_TABLES + 1, 11];
         public static string[,] FVT = new string[NUMBER_TABLES + 1, 11];
+        public static string[] SQL_MSG = new string[NUMBER_TABLES + 1];
+
+        public static string PROGRAM_LOCATION;
+        public static int TELEBIB_LAST;
+        public static string[] TABLEDEF_ONT_;
+        public static string MSG;
+        public static decimal DKTRL_CUMUL;
+        public static decimal DKTRL_BEF;
+        public static decimal DKTRL_EUR;
 
         public static int[] DAYS_IN_MONTH = new int[13]; // 1..12 used
         public static string[] MONTH_AS_TEXT = new string[13]; // 1..12 used
@@ -113,8 +121,7 @@ namespace mar2026.Classes
         public static string[] TELEBIB_TYPE = new string[MAX_TELEBIB + 1];
         public static int[] TELEBIB_LENGHT = new int[MAX_TELEBIB + 1];
         public static int[] TELEBIB_POS = new int[MAX_TELEBIB + 1];
-        public static int TELEBIB_LAST;
-
+        
         public static int FL99;
         public static string FL99_RECORD;
         public static int PRINTER_CURRENT_Y;
@@ -124,11 +131,7 @@ namespace mar2026.Classes
         public static string MAR_VERSION;
         public static string LOG_PRINT;
         public static bool BL_LOGGING;
-
-        public static decimal DKTRL_CUMUL;
-        public static decimal DKTRL_BEF;
-        public static decimal DKTRL_EUR;
-
+                
         public static int B_MODUS;
         public static int COUNT_TO;
 
@@ -141,7 +144,6 @@ namespace mar2026.Classes
 
         public static string LOCATION_COMPANYDATA;
         public static string LOCATION_NETDATA;
-        public static string PROGRAM_LOCATION;
         public static string LOCATION_;
         public static string LOCATION_ASWEB;
         public static string LOCATION_MYDOCUMENTS;
@@ -172,8 +174,7 @@ namespace mar2026.Classes
         public static double DCTRL_CUMUL;
         public static int SETUP_FIELDS;
         public static string COMPANY_CHOISE;
-        public static double D_CURRENCY;
-        public static string MSG;
+        public static double D_CURRENCY;        
         public static int CTRL_BOX;
         public static string SQL_COMMAND;
         public static int DOEVENTS_STATUS;

@@ -77,7 +77,7 @@ namespace mar2026
         private void CmbBoekjaar_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Keep existing behavior
-            ModLibs.ACTIVE_BOOKYEAR = (short)CmbBoekjaar.SelectedIndex;
+            ModLibs.ACTIVE_BOOKYEAR = (int)CmbBoekjaar.SelectedIndex;
 
             if (SharedGlobals.MimLoadingNewCompany)
                 return;

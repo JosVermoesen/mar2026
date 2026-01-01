@@ -964,6 +964,7 @@ namespace mar2026.Classes
             LoadBookyearsAndPeriods(bjPerDat);
             OpenJetDatabase(mim);
 
+
             Cijfermaskers();
 
             bjPerDat.Show(mim);
@@ -1009,9 +1010,7 @@ namespace mar2026.Classes
                 AD_NTDB = new Connection();
                 AD_NTDB.Open(JET_CONNECT);
 
-                BA_MODUS = 1;
-
-                InitBestanden(); // from MimTools
+                BA_MODUS = 1;                
             }
             catch (System.Exception ex)
             {
@@ -1020,6 +1019,157 @@ namespace mar2026.Classes
                     "AutoLoadCompany",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+            }
+
+            // --- Loop tables and load TeleBib + verify indexes ---
+
+            for (int t = TABLE_VARIOUS; t <= TABLE_COUNTERS; t++)
+            {
+                BClose(t);
+                BOpen(t);
+
+                TeleBibPage(t);
+
+
+                if (t == TABLE_VARIOUS || t == TABLE_COUNTERS)
+                {
+                    continue;
+                }
+
+                string aa = string.Empty;
+
+                try
+                {
+                    // Fase 1 : Huidige databaseindexen (her)samenstellen
+                    if (NT_DB != null && !string.IsNullOrEmpty(JET_TABLENAME[t]))
+                    {
+                        var tableDef = NT_DB.TableDefs[JET_TABLENAME[t]];
+                        int indexCount = tableDef.Indexes.Count;
+
+                        for (int tt = 0; tt < indexCount; tt++)
+                        {
+                            var daoIndex = (DAO.Index)tableDef.Indexes[tt];
+                            aa += daoIndex.Name + ";";
+                        }
+                    }
+                }
+                catch
+                {
+                    // Ignore DAO errors; we'll skip index verification for this table.
+                    continue;
+                }
+
+                // Fase 2 : Standaard definitie aanwezigheid controleren
+                for (int tt = 0; tt <= FL_NUMBEROFINDEXEN[t]; tt++)
+                {
+                    string caption = FLINDEX_CAPTION[t, tt];
+                    if (string.IsNullOrEmpty(caption))
+                    {
+                        continue;
+                    }
+
+                    int plTt = aa.IndexOf(caption, StringComparison.Ordinal);
+                    if (plTt >= 0)
+                    {
+                        if (plTt == 0)
+                        {
+                            aa = aa.Substring(caption.Length + 1);
+                        }
+                        else
+                        {
+                            aa = aa.Substring(0, plTt) + aa.Substring(plTt + caption.Length + 1);
+                        }
+                    }
+                    else if (caption == "Boekdatum")
+                    {
+                        // Ignore missing "Boekdatum" index
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "Index '" + caption + "' van tabel '" + JET_TABLENAME[t] + "' bestaat niet meer !!!",
+                            "InitBestanden",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);                     
+                    }
+                }
+
+                // Any remaining indexes in 'aa' are user‑added; append them to FL_INDEX arrays
+                if (!string.IsNullOrEmpty(aa))
+                {
+                    while (!string.IsNullOrEmpty(aa))
+                    {
+                        int sep = aa.IndexOf(';');
+                        if (sep < 0)
+                        {
+                            break;
+                        }
+
+                        string idxName = aa.Substring(0, sep);
+                        if (string.IsNullOrEmpty(idxName))
+                        {
+                            break;
+                        }
+
+                        FL_NUMBEROFINDEXEN[t]++;
+                        int idxPos = FL_NUMBEROFINDEXEN[t];
+                        FLINDEX_CAPTION[t, idxPos] = idxName;
+
+                        try
+                        {
+                            var tableDef = NT_DB.TableDefs[JET_TABLENAME[t]];
+                            var daoIndex = tableDef.Indexes[idxName];
+                            int fieldCount = daoIndex.Fields.Count;
+
+                            if (fieldCount - 1 != 0)
+                            {
+                                // Composite index: join first and remaining fields with '+'
+                                MessageBox.Show(
+                                    "Index " + idxName + " van tabel " + JET_TABLENAME[t] +
+                                    " is samengesteld uit meerdere velden..." + Environment.NewLine +
+                                    "Deze index enkel te gebruiken voor lijsten van " + JET_TABLENAME[t] +
+                                    ".  Bij geïndexeerd zoeken wordt enkel het eerste veld opgenomen in het rooster.");
+
+                                string firstName = ((DAO.Field)daoIndex.Fields[0]).Name;
+                                JETTABLEUSE_INDEX[t, idxPos] = firstName;
+
+                                for (int ttt = 1; ttt < fieldCount; ttt++)
+                                {
+                                    string fn = ((DAO.Field)daoIndex.Fields[ttt]).Name;
+                                    JETTABLEUSE_INDEX[t, idxPos] += "+" + fn;
+                                }
+
+                                FLINDEX_LEN[t, idxPos] = 0;
+                            }
+                            else
+                            {
+                                string firstName = ((DAO.Field)daoIndex.Fields[0]).Name;
+                                JETTABLEUSE_INDEX[t, idxPos] = firstName;
+
+                                var fld = tableDef.Fields[firstName.TrimEnd()];
+                                FLINDEX_LEN[t, idxPos] = fld.Size;
+                            }
+                        }
+                        catch
+                        {
+                            // If DAO fails here, leave JETTABLEUSE_INDEX/FLINDEX_LEN as defaults.
+                        }
+
+                        int plRemove = aa.IndexOf(idxName, StringComparison.Ordinal);
+                        if (plRemove == 0)
+                        {
+                            aa = aa.Substring(idxName.Length + 1);
+                        }
+                        else if (plRemove > 0)
+                        {
+                            aa = aa.Substring(0, plRemove) + aa.Substring(plRemove + idxName.Length + 1);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -1490,75 +1640,7 @@ namespace mar2026.Classes
 
             FL_NUMBEROFINDEXEN[TABLE_DUMMY] = 0;
             JETTABLEUSE_INDEX[TABLE_DUMMY, 0] = "v089 "; FLINDEX_LEN[TABLE_DUMMY, 0] = 20; FLINDEX_CAPTION[TABLE_DUMMY, 0] = "Plaatselijk sorteren";
-
-            //for (int t = TABLE_VARIOUS; t <= TABLE_COUNTERS; t++)
-            //{
-            //    BClose(t);
-            //    BOpen(t);
-
-            //    // TeleBibPagina(t) equivalent not yet ported; keep success for now.
-            //    // If you port TeleBibPagina, call it here and set ok = false on failure.
-
-            //    if (t == TABLE_VARIOUS || t == TABLE_COUNTERS)
-            //    {
-            //        continue;
-            //    }
-
-            //    string aa = string.Empty;
-
-            //    try
-            //    {
-            //        // Phase 1: collect all existing index names from ntDB.TableDefs(bstNaam(t)).Indexes
-            //        if (NT_DB != null && !string.IsNullOrEmpty(JET_TABLENAME[t]))
-            //        {
-            //            foreach (var idx in NT_DB.TableDefs[JET_TABLENAME[t]].Indexes)
-            //            {
-            //                var daoIndex = (DAO.Index)idx;
-            //                aa += daoIndex.Name + ";";
-            //            }
-            //        }
-            //    }
-            //    catch
-            //    {
-            //        // Ignore DAO errors; we'll just skip index verification.
-            //        continue;
-            //    }
-
-            //    // Phase 2: verify presence of standard definitions
-            //    for (int tt = 0; tt <= FL_NUMBEROFINDEXEN[t]; tt++)
-            //    {
-            //        string caption = FLINDEX_CAPTION[t, tt];
-            //        if (string.IsNullOrEmpty(caption))
-            //            continue;
-
-            //        int pos = aa.IndexOf(caption, StringComparison.Ordinal);
-            //        if (pos >= 0)
-            //        {
-            //            if (pos == 0)
-            //            {
-            //                aa = aa.Substring(caption.Length + 1);
-            //            }
-            //            else
-            //            {
-            //                aa = aa.Substring(0, pos) + aa.Substring(pos + caption.Length + 1);
-            //            }
-            //        }
-            //        else if (caption == "Boekdatum")
-            //        {
-            //            // ignore missing "Boekdatum" index, as in VB6
-            //        }
-            //        else
-            //        {
-            //            MessageBox.Show(
-            //                "Index '" + caption + "' van tabel '" + JET_TABLENAME[t] + "' bestaat niet meer !!!",
-            //                "InitBestanden",
-            //                MessageBoxButtons.OK,
-            //                MessageBoxIcon.Warning);
-            //            ok = false;
-            //        }
-            //    }
-            //}
-
+                        
             return ok;
         }
 
@@ -2084,28 +2166,106 @@ namespace mar2026.Classes
             return (dbWaarde == null || dbWaarde is DBNull) ? string.Empty : dbWaarde;
         }
 
+        public static void BClose(int fl)
+        {
+            // VB: If Fl = 99 Then close all tables
+            if (fl == 99)
+            {
+                for (int i = 0; i <= NUMBER_TABLES; i++)
+                {
+                    TLB_RECORD[i] = string.Empty;
+                    CloseTable(i);
+                }
+            }
+            else
+            {
+                CloseTable(fl);
+            }
+        }
+
+        private static void CloseTable(int fl)
+        {
+            if (RS_MAR[fl] == null || RS_MAR[fl].State == (int)ObjectStateEnum.adStateClosed)
+            {
+                return;
+            }
+
+            try
+            {
+                RS_MAR[fl].Close();
+                KTRL = 0;
+            }
+            catch (System.Runtime.InteropServices.COMException comEx)
+            {
+                // VB6 checked Err = 3420
+                const int ADO_ERROR_3420 = unchecked((int)0x800A0D5C);
+                KTRL = comEx.ErrorCode;
+                if (comEx.ErrorCode == ADO_ERROR_3420)
+                {
+                    MessageBox.Show(comEx.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                KTRL = ex.HResult;
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
+        public static int BOpen(int fl)
+        {
+            // If already open, just return 0 (success)
+            if (RS_MAR[fl] != null && RS_MAR[fl].State != (int)ObjectStateEnum.adStateClosed)
+            {
+                return 0;
+            }
+
+            if (RS_MAR[fl] == null)
+            {
+                RS_MAR[fl] = new Recordset();
+            }
+
+            try
+            {
+                RS_MAR[fl].CursorLocation = CursorLocationEnum.adUseServer;
+
+                    if (fl == TABLE_COUNTERS)
+                    {
+                        RS_MAR[fl].Open(
+                            JET_TABLENAME[fl],
+                            AD_NTDB,
+                            CursorTypeEnum.adOpenKeyset,
+                            LockTypeEnum.adLockOptimistic,
+                            (int)CommandTypeEnum.adCmdTableDirect);
+                    }
+                    else
+                    {
+                        RS_MAR[fl].Open(
+                            JET_TABLENAME[fl],
+                            AD_NTDB,
+                            CursorTypeEnum.adOpenKeyset,
+                            LockTypeEnum.adLockOptimistic,
+                            (int)CommandTypeEnum.adCmdTableDirect);
+                    }
+                
+
+                // ntRS(Fl).LockEdits = False  'not applicable in ADODB.Recordset
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "BOpen");
+                KTRL = ex.HResult;
+                return KTRL;
+            }
+        }
+
         // TeleBibPagina and full Btrieve cursor operations (bFirst/bNext/...) remain
         // in ModDatabase for now; only core record-buffer helpers are centralized here.
 
         // Add this method to the ModBtrieve class to resolve CS0117
-        public static int BClose(int fl)
-        {
-            // Stub implementation; replace with actual logic as needed.
-            throw new System.NotImplementedException();
-        }
-                
-        public static int BOpen(int fl)
-        {
-            // Stub implementation; replace with actual logic as needed.
-            throw new System.NotImplementedException();
-        }
 
-
-        public static string[] TELEBIB_CODE = new string[MAX_TELEBIB + 2];      // -1..150 mapped to 0..151
-        public static string[] TELEBIB_TEXT = new string[MAX_TELEBIB + 1];
-        public static string[] TELEBIB_TYPE = new string[MAX_TELEBIB + 1];
-        public static int[] TELEBIB_LENGHT = new int[MAX_TELEBIB + 1];
-        public static int[] TELEBIB_POS = new int[MAX_TELEBIB + 1];
-        public static int TELEBIB_LAST;               
     }
 }

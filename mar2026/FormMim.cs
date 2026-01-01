@@ -13,8 +13,6 @@ namespace mar2026
 {
     public partial class FormMim : Form
     {
-        private string FULL_LINE;
-
         public FormMim()
         {
             InitializeComponent();            
@@ -203,19 +201,19 @@ namespace mar2026
                         case 1:
                             ModLibs.BasisB[1].Text = "Fiche Klanten";
                             ModLibs.BasisB[1].BackColor = System.Drawing.Color.Blue;
-                            
+                            ModLibs.BasisB[1].flHere = 1;
                             break;
 
                         case 2:
                             ModLibs.BasisB[2].Text = "Fiche Leveranciers";
                             ModLibs.BasisB[2].BackColor = System.Drawing.Color.Red;
-                            
+                            ModLibs.BasisB[2].flHere = 2;
                             break;
 
                         case 3:
                             ModLibs.BasisB[3].Text = "Rekening Fiche";
                             ModLibs.BasisB[3].BackColor = System.Drawing.Color.White;
-                            
+                            ModLibs.BasisB[3].flHere = 3;
                             break;
                     }
                     // Show as MDI child, minimized and disabled at startup
@@ -520,11 +518,13 @@ namespace mar2026
             MONTH_AS_TEXT[10] = "October  ";
             MONTH_AS_TEXT[11] = "November ";
             MONTH_AS_TEXT[12] = "December ";
+
+            InitBestanden(); // from MimTools
         }
 
 
 
-        //public static object XrsMar(short fl, string TBS)
+        //public static object XrsMar(int fl, string TBS)
         //{
         //    var value = RS_MAR[fl].Fields[TBS].Value;
         //    return (value == null || value is System.DBNull) ? string.Empty : value;

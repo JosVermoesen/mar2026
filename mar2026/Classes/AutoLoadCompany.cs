@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 using ADODB;
 
 using static mar2026.Classes.AllFunctions;
+using static mar2026.Classes.ModDatabase;
 using static mar2026.Classes.ModLibs;
 
 namespace mar2026.Classes
@@ -67,7 +68,7 @@ namespace mar2026.Classes
             // Simplified, partial port of the 9999.OCT / DEFxx.OCT logic.
             // Assumes LOCATION_COMPANYDATA and PROGRAM_LOCATION are set.
 
-            string oct9999 = Path.Combine(PROGRAM_LOCATION ?? string.Empty, "9999.OCT");
+            string oct9999 = Path.Combine(ModLibs.PROGRAM_LOCATION ?? string.Empty, "9999.OCT");
             if (!File.Exists(oct9999))
                 return;
 
@@ -91,7 +92,7 @@ namespace mar2026.Classes
                     for (int i = 9; i >= 0; i--)
                     {
                         string defPath = Path.Combine(
-                            LOCATION_COMPANYDATA ?? string.Empty,
+                            ModLibs.LOCATION_COMPANYDATA ?? string.Empty,
                             "DEF" + i.ToString("00") + ".OCT");
 
                         if (!File.Exists(defPath))
@@ -127,7 +128,7 @@ namespace mar2026.Classes
                     if (bjPerDat.CmbBoekjaar.SelectedItem is string bjText)
                     {
                         string defActive = Path.Combine(
-                            LOCATION_COMPANYDATA ?? string.Empty,
+                            ModLibs.LOCATION_COMPANYDATA ?? string.Empty,
                             "DEF" + ACTIVE_BOOKYEAR.ToString("00") + ".OCT");
 
                         if (File.Exists(defActive))
@@ -218,7 +219,7 @@ namespace mar2026.Classes
             // Partial port of the Jet branch (non-SQL-Server) from VB6.
             // Focus: open ntDB, adntDB, run TabelKontrole and InitBestanden.
 
-            string companyPath = LOCATION_COMPANYDATA ?? string.Empty;
+            string companyPath = ModLibs.LOCATION_COMPANYDATA ?? string.Empty;
             string mdvPath = Path.Combine(companyPath, "Marnt.MDV");
 
             if (!File.Exists(mdvPath))
@@ -261,9 +262,6 @@ namespace mar2026.Classes
                 AD_NTDB.Open(JET_CONNECT);
                                 
                 BA_MODUS = 1;
-
-                // Init index metadata
-                InitBestanden();
             }
             catch (Exception ex)
             {
@@ -273,6 +271,157 @@ namespace mar2026.Classes
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+
+            // --- Loop tables and load TeleBib + verify indexes ---
+
+            for (int t = TABLE_VARIOUS; t <= TABLE_COUNTERS; t++)
+            {
+                BClose(t);
+                BOpen(t);
+
+                TeleBibPage(t);
+
+
+                if (t == TABLE_VARIOUS || t == TABLE_COUNTERS)
+                {
+                    continue;
+                }
+
+                string aa = string.Empty;
+
+                try
+                {
+                    // Fase 1 : Huidige databaseindexen (her)samenstellen
+                    if (NT_DB != null && !string.IsNullOrEmpty(JET_TABLENAME[t]))
+                    {
+                        var tableDef = NT_DB.TableDefs[JET_TABLENAME[t]];
+                        int indexCount = tableDef.Indexes.Count;
+
+                        for (int tt = 0; tt < indexCount; tt++)
+                        {
+                            var daoIndex = (DAO.Index)tableDef.Indexes[tt];
+                            aa += daoIndex.Name + ";";
+                        }
+                    }
+                }
+                catch
+                {
+                    // Ignore DAO errors; we'll skip index verification for this table.
+                    continue;
+                }
+
+                // Fase 2 : Standaard definitie aanwezigheid controleren
+                for (int tt = 0; tt <= FL_NUMBEROFINDEXEN[t]; tt++)
+                {
+                    string caption = FLINDEX_CAPTION[t, tt];
+                    if (string.IsNullOrEmpty(caption))
+                    {
+                        continue;
+                    }
+
+                    int plTt = aa.IndexOf(caption, StringComparison.Ordinal);
+                    if (plTt >= 0)
+                    {
+                        if (plTt == 0)
+                        {
+                            aa = aa.Substring(caption.Length + 1);
+                        }
+                        else
+                        {
+                            aa = aa.Substring(0, plTt) + aa.Substring(plTt + caption.Length + 1);
+                        }
+                    }
+                    else if (caption == "Boekdatum")
+                    {
+                        // Ignore missing "Boekdatum" index
+                    }
+                    else
+                    {
+                        //MessageBox.Show(
+                        //    "Index '" + caption + "' van tabel '" + JET_TABLENAME[t] + "' bestaat niet meer !!!",
+                        //    "InitBestanden",
+                        //    MessageBoxButtons.OK,
+                        //    MessageBoxIcon.Warning);                        
+                    }
+                }
+
+                // Any remaining indexes in 'aa' are user‑added; append them to FL_INDEX arrays
+                if (!string.IsNullOrEmpty(aa))
+                {
+                    while (!string.IsNullOrEmpty(aa))
+                    {
+                        int sep = aa.IndexOf(';');
+                        if (sep < 0)
+                        {
+                            break;
+                        }
+
+                        string idxName = aa.Substring(0, sep);
+                        if (string.IsNullOrEmpty(idxName))
+                        {
+                            break;
+                        }
+
+                        FL_NUMBEROFINDEXEN[t]++;
+                        int idxPos = FL_NUMBEROFINDEXEN[t];
+                        FLINDEX_CAPTION[t, idxPos] = idxName;
+
+                        try
+                        {
+                            var tableDef = NT_DB.TableDefs[JET_TABLENAME[t]];
+                            var daoIndex = tableDef.Indexes[idxName];
+                            int fieldCount = daoIndex.Fields.Count;
+
+                            if (fieldCount - 1 != 0)
+                            {
+                                // Composite index: join first and remaining fields with '+'
+                                MessageBox.Show(
+                                    "Index " + idxName + " van tabel " + JET_TABLENAME[t] +
+                                    " is samengesteld uit meerdere velden..." + Environment.NewLine +
+                                    "Deze index enkel te gebruiken voor lijsten van " + JET_TABLENAME[t] +
+                                    ".  Bij geïndexeerd zoeken wordt enkel het eerste veld opgenomen in het rooster.");
+
+                                string firstName = ((DAO.Field)daoIndex.Fields[0]).Name;
+                                JETTABLEUSE_INDEX[t, idxPos] = firstName;
+
+                                for (int ttt = 1; ttt < fieldCount; ttt++)
+                                {
+                                    string fn = ((DAO.Field)daoIndex.Fields[ttt]).Name;
+                                    JETTABLEUSE_INDEX[t, idxPos] += "+" + fn;
+                                }
+
+                                FLINDEX_LEN[t, idxPos] = 0;
+                            }
+                            else
+                            {
+                                string firstName = ((DAO.Field)daoIndex.Fields[0]).Name;
+                                JETTABLEUSE_INDEX[t, idxPos] = firstName;
+
+                                var fld = tableDef.Fields[firstName.TrimEnd()];
+                                FLINDEX_LEN[t, idxPos] = fld.Size;
+                            }
+                        }
+                        catch
+                        {
+                            // If DAO fails here, leave JETTABLEUSE_INDEX/FLINDEX_LEN as defaults.
+                        }
+
+                        int plRemove = aa.IndexOf(idxName, StringComparison.Ordinal);
+                        if (plRemove == 0)
+                        {
+                            aa = aa.Substring(idxName.Length + 1);
+                        }
+                        else if (plRemove > 0)
+                        {
+                            aa = aa.Substring(0, plRemove) + aa.Substring(plRemove + idxName.Length + 1);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         private static void NetVoorbereiden()
@@ -280,8 +429,8 @@ namespace mar2026.Classes
             // Simplified version of VB6 netVoorbereiden: ensure .OXT exists for each DEFxx.OCT
             for (int count = 9; count >= 0; count--)
             {
-                string defOct = Path.Combine(LOCATION_COMPANYDATA ?? string.Empty, "DEF" + count.ToString("00") + ".OCT");
-                string defOxt = Path.Combine(LOCATION_COMPANYDATA ?? string.Empty, "DEF" + count.ToString("00") + ".OXT");
+                string defOct = Path.Combine(ModLibs.LOCATION_COMPANYDATA ?? string.Empty, "DEF" + count.ToString("00") + ".OCT");
+                string defOxt = Path.Combine(ModLibs.LOCATION_COMPANYDATA ?? string.Empty, "DEF" + count.ToString("00") + ".OXT");
 
                 if (!File.Exists(defOxt) && File.Exists(defOct))
                 {

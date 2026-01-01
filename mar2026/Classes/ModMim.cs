@@ -51,17 +51,17 @@ namespace mar2026.Classes
             throw new NotImplementedException("SettingSaving has not been fully ported from VB yet.");
         }
 
-        public static void SS99(string stringInhoud, short nummerRec)
+        public static void SS99(string stringInhoud, int nummerRec)
         {
             throw new NotImplementedException("SS99 has not been fully ported from VB yet.");
         }
 
-        public static void SetString99(short nummerSleutel)
+        public static void SetString99(int nummerSleutel)
         {
             throw new NotImplementedException("SetString99 has not been fully ported from VB yet.");
         }
 
-        public static int FieldIsOk(short flHier, string veldNaam, string veldDef = "")
+        public static int FieldIsOk(int flHier, string veldNaam, string veldDef = "")
         {
             throw new NotImplementedException("FieldIsOk has not been fully ported from VB yet.");
         }
@@ -96,7 +96,7 @@ namespace mar2026.Classes
             throw new NotImplementedException("VValdag has not been fully ported from VB yet.");
         }
 
-        public static string SleutelDok(short fRecordNr)
+        public static string SleutelDok(int fRecordNr)
         {
             throw new NotImplementedException("SleutelDok has not been fully ported from VB yet.");
         }
@@ -106,52 +106,52 @@ namespace mar2026.Classes
             throw new NotImplementedException("FunctionDateText has not been fully ported from VB yet.");
         }
 
-        public static short CopyFile(string sourcePath, string targetPath, string fileToCopy)
+        public static int CopyFile(string sourcePath, string targetPath, string fileToCopy)
         {
             throw new NotImplementedException("CopyFile has not been fully ported from VB yet.");
         }
 
-        public static short FileExists(string path)
+        public static int FileExists(string path)
         {
             throw new NotImplementedException("FileExists has not been fully ported from VB yet.");
         }
 
-        public static void CMDVSOFTSPACE(short flfree)
+        public static void CMDVSOFTSPACE(int flfree)
         {
             throw new NotImplementedException("CMDVSOFTSPACE has not been fully ported from VB yet.");
         }
 
-        public static void CMDPICTURE(short flfree)
+        public static void CMDPICTURE(int flfree)
         {
             throw new NotImplementedException("CMDPICTURE has not been fully ported from VB yet.");
         }
 
-        public static void CMDADRESSPACE(short flfree)
+        public static void CMDADRESSPACE(int flfree)
         {
             throw new NotImplementedException("CMDADRESSPACE has not been fully ported from VB yet.");
         }
 
-        public static void CMDWRITE(short flFree)
+        public static void CMDWRITE(int flFree)
         {
             throw new NotImplementedException("CMDWRITE has not been fully ported from VB yet.");
         }
 
-        public static void CMDWRITEBOX(short flFree)
+        public static void CMDWRITEBOX(int flFree)
         {
             throw new NotImplementedException("CMDWRITEBOX has not been fully ported from VB yet.");
         }
 
-        public static void CMDPRINT(short flFree, double pdfOVSStrook)
+        public static void CMDPRINT(int flFree, double pdfOVSStrook)
         {
             throw new NotImplementedException("CMDPRINT has not been fully ported from VB yet.");
         }
 
-        public static short DateWrongFormat(string fDatum)
+        public static int DateWrongFormat(string fDatum)
         {
             throw new NotImplementedException("DateWrongFormat has not been fully ported from VB yet.");
         }
 
-        public static bool IsDateOk(string fDatum, short fVlag)
+        public static bool IsDateOk(string fDatum, int fVlag)
         {
             throw new NotImplementedException("IsDateOk has not been fully ported from VB yet.");
         }

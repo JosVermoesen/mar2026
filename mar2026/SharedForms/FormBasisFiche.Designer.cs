@@ -58,7 +58,8 @@ namespace mar2026
             this.ButtonFirst.Size = new System.Drawing.Size(63, 23);
             this.ButtonFirst.TabIndex = 1;
             this.ButtonFirst.Text = "&Eerste";
-            this.ButtonFirst.UseVisualStyleBackColor = true;            
+            this.ButtonFirst.UseVisualStyleBackColor = true;
+            this.ButtonFirst.Click += new System.EventHandler(this.ButtonFirst_Click);
             // 
             // MasketEditBoxInfo
             // 
@@ -74,7 +75,8 @@ namespace mar2026
             this.ButtonLast.Size = new System.Drawing.Size(63, 23);
             this.ButtonLast.TabIndex = 3;
             this.ButtonLast.Text = "&Laatste";
-            this.ButtonLast.UseVisualStyleBackColor = true;            
+            this.ButtonLast.UseVisualStyleBackColor = true;
+            this.ButtonLast.Click += new System.EventHandler(this.ButtonLast_Click);
             // 
             // ButtonPrev
             // 
@@ -83,7 +85,8 @@ namespace mar2026
             this.ButtonPrev.Size = new System.Drawing.Size(63, 23);
             this.ButtonPrev.TabIndex = 5;
             this.ButtonPrev.Text = "&Vorige";
-            this.ButtonPrev.UseVisualStyleBackColor = true;            
+            this.ButtonPrev.UseVisualStyleBackColor = true;
+            this.ButtonPrev.Click += new System.EventHandler(this.ButtonPrev_Click);
             // 
             // ButtonNext
             // 
@@ -92,7 +95,8 @@ namespace mar2026
             this.ButtonNext.Size = new System.Drawing.Size(63, 23);
             this.ButtonNext.TabIndex = 4;
             this.ButtonNext.Text = "&Volgende";
-            this.ButtonNext.UseVisualStyleBackColor = true;            
+            this.ButtonNext.UseVisualStyleBackColor = true;
+            this.ButtonNext.Click += new System.EventHandler(this.ButtonNext_Click);
             // 
             // ButtonMinimize
             // 
@@ -113,6 +117,7 @@ namespace mar2026
             this.ButtonRelating.TabIndex = 6;
             this.ButtonRelating.Text = "&Relaties";
             this.ButtonRelating.UseVisualStyleBackColor = true;
+            this.ButtonRelating.Click += new System.EventHandler(this.ButtonRelating_Click);
             // 
             // ButtonEdit
             // 
@@ -121,7 +126,8 @@ namespace mar2026
             this.ButtonEdit.Size = new System.Drawing.Size(93, 23);
             this.ButtonEdit.TabIndex = 8;
             this.ButtonEdit.Text = "&Bewerken";
-            this.ButtonEdit.UseVisualStyleBackColor = true;            
+            this.ButtonEdit.UseVisualStyleBackColor = true;
+            this.ButtonEdit.Click += new System.EventHandler(this.ButtonEdit_Click);
             // 
             // ButtonRemove
             // 
@@ -132,6 +138,7 @@ namespace mar2026
             this.ButtonRemove.TabStop = false;
             this.ButtonRemove.Text = "Verwijderen";
             this.ButtonRemove.UseVisualStyleBackColor = true;
+            this.ButtonRemove.Click += new System.EventHandler(this.ButtonRemove_Click);
             // 
             // ButtonSearchOn
             // 
@@ -140,7 +147,8 @@ namespace mar2026
             this.ButtonSearchOn.Size = new System.Drawing.Size(93, 23);
             this.ButtonSearchOn.TabIndex = 10;
             this.ButtonSearchOn.Text = "&Zoeken op ...";
-            this.ButtonSearchOn.UseVisualStyleBackColor = true;            
+            this.ButtonSearchOn.UseVisualStyleBackColor = true;
+            this.ButtonSearchOn.Click += new System.EventHandler(this.ButtonSearchOn_Click);
             // 
             // FormBasisFiche
             // 
@@ -166,6 +174,7 @@ namespace mar2026
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "BasisFiche";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.Load += new System.EventHandler(this.FormBasisFiche_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

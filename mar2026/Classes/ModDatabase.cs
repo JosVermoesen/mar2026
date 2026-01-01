@@ -1,10 +1,9 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.OleDb;
 using System.IO;
 using System.Windows.Forms;
 using ADODB;
-using Microsoft.VisualBasic; // make sure you have the COM reference
 using static mar2026.Classes.ModLibs;
 
 namespace mar2026.Classes
@@ -15,59 +14,7 @@ namespace mar2026.Classes
         // You must provide all of these globals somewhere (they came from VB module scope).
 
         // Example of external/global dependencies you already have in VB:
-        //public static Connection AD_NTDB;
 
-        // public static int KTRL;
-        //public static string LOCATION_COMPANYDATA;
-        public static string PROGRAM_LOCATION;
-        public static bool VSOFT_LOG;
-        //public static bool BH_EURO;
-        public static bool ACTIVE_BOOKYEAR;
-        public static double EURO;
-        //public static bool LOCK_HOLD;
-        //public static string SQL_CONNECT;
-        public static string AGENT_NUMBER;
-
-        //public const int TABLE_CUSTOMERS = 0;
-        //public const int TABLE_SUPPLIERS = 1;
-        //public const int TABLE_LEDGERACCOUNTS = 2;
-        //public const int TABLE_PRODUCTS = 3;
-        //public const int TABLE_INVOICES = 4;
-        //public const int TABLE_JOURNAL = 5;
-        //public const int TABLE_CONTRACTS = 6;
-        //public const int TABLE_COUNTERS = 7;
-        //public const int TABLE_VARIOUS = 8;
-        //public const int TABLE_DUMMY = 9;
-        public const int NUMBER_TABLES = 99; // adjust to your real value
-        //public const int READING = 0;
-
-        // You need to define these arrays with correct sizes elsewhere, or keep them here:
-        //public static Recordset[] RS_MAR;              // ADODB.Recordset array for tables
-        public static Recordset RS_JOURNAL;           // separate journal recordset
-        //public static Recordset AD_KBTable;
-        //public static string[] JET_TABLENAME;
-        public static string[] TABLEDEF_ONT;
-        public static string[] SQL_MSG;
-        //public static string[] KEY_BUF;
-        //public static int[] KEY_INDEX;
-        public static string[] TELEBIB_CODE;
-        public static string[] TELEBIB_TEXT;
-        public static string[] TELEBIB_TYPE;
-        public static int[] TELEBIB_LENGHT;
-        public static int TELEBIB_LAST;
-        //public static string[] VBC;                   // in VB this is 2D; you may keep as string[,] instead
-        
-        //public static int[] FL_NUMBEROFINDEXEN;
-        //public static string[,] JETTABLEUSE_INDEX;    // [table, index] -> field name
-        //public static string[,] FLINDEX_CAPTION;      // [table, index]
-        //public static int[,] FLINDEX_LEN;           // [table, index]
-        public static string[] TABLEDEF_ONT_;
-        //public static string[] TLB_RECORD;
-        //public static string[,] FVT;                  // [table, index]
-        public static string MSG;
-        public static decimal DKTRL_CUMUL;
-        public static decimal DKTRL_BEF;
-        public static decimal DKTRL_EUR;
 
         // Forms
         // public static FormBoxList FormBoxList;
@@ -268,40 +215,29 @@ namespace mar2026.Classes
 
         public static string AdoGetField(int fl, string tbs)
         {
-            string tbsHere = string.Empty;
-            if (Mid(tbs, 1, 1) == "#" && tbs.Length == 7)
+            if (RS_MAR[fl].RecordCount == 0)
             {
-                tbsHere = tbs;
-            }
-            else if (tbs.Length == 6)
-            {
-                tbsHere = "#     #";
-                MidAssign(ref tbsHere, 2, 4, Mid(tbs, 2, 4));
-            }
-            else
-            {
-                // VB Stop
-                System.Diagnostics.Debugger.Break();
+                return "";
             }
 
             try
             {
-                if (string.IsNullOrEmpty(TLB_RECORD[fl]))
+
+                string fieldValue = RS_MAR[fl].Fields[tbs].Value.ToString();
+
+                if (!Convert.IsDBNull(RS_MAR[fl].Fields[tbs].Value))
                 {
-                    return string.Empty;
+                    fieldValue = RS_MAR[fl].Fields[tbs].Value.ToString();
                 }
-
-                int pos = InStr(TLB_RECORD[fl], tbsHere);
-                if (pos == 0) return string.Empty;
-                int from = pos + 7;
-                int to = InStr(from, TLB_RECORD[fl], "#");
-                if (to == 0 || to <= from) return string.Empty;
-
-                return Mid(TLB_RECORD[fl], from, to - from);
+                else
+                {
+                    fieldValue = "";
+                }
+                return fieldValue;
             }
-            catch
+            catch (Exception)
             {
-                return string.Empty;
+                return "";
             }
         }
 
@@ -389,9 +325,7 @@ namespace mar2026.Classes
         public static void Bdelete(int fl)
         {
             KTRL = 0;
-            if (VSOFT_LOG)
-                WriteLog("DELETE", fl, 0, string.Empty);
-
+            
             try
             {
                 RS_MAR[fl].Delete();
@@ -404,14 +338,42 @@ namespace mar2026.Classes
             }
         }
 
+        public static void JetGetAll(int fl, int fIndex, bool moveFirstLast)
+        {
+            JetTableClose(fl);
+
+            string testSQL = "SELECT * FROM " + JET_TABLENAME[fl] +
+                          " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
+            SQL_MSG[fl] = SQL_MSG[fl] = testSQL;
+
+            KTRL = 0;
+            JetTableOpen(fl);
+
+            if (RS_MAR[fl].EOF || RS_MAR[fl].RecordCount == -1)
+            {
+                MessageBox.Show("Nothing found");
+            }
+            else if (RS_MAR[fl].RecordCount > 0)
+            {
+                KEY_INDEX[fl] = fIndex;                
+                if (moveFirstLast)
+                {
+                    RS_MAR[fl].MoveFirst();
+                }
+                else
+                {
+                    RS_MAR[fl].MoveLast();
+                }
+            }            
+        }
+
         public static void JetGetFirst(int fl, int fIndex)
         {
             JetTableClose(fl);            
 
-            SQL_MSG[fl] = "SELECT TOP 1 * FROM " + JET_TABLENAME[fl] +
+            string testSQL = "SELECT TOP 1 * FROM " + JET_TABLENAME[fl] +
                           " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
-            string sSql = "SELECT TOP 1 * FROM " + JET_TABLENAME[fl] +
-                          " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
+            SQL_MSG[fl] = SQL_MSG[fl] = testSQL;
 
             KTRL = 0;
             JetTableOpen(fl);
@@ -433,9 +395,7 @@ namespace mar2026.Classes
         public static void JetGet(int fl, int fIndex, ref string fSleutel)
         {
             JetTableClose(fl);
-            if (VSOFT_LOG)
-                WriteLog("GET   ", fl, fIndex, fSleutel);
-
+            
             fSleutel = SetSpacing(fSleutel, FLINDEX_LEN[fl, fIndex]);
             SQL_MSG[fl] = "SELECT * FROM " + JET_TABLENAME[fl] +
                           " WHERE " + JETTABLEUSE_INDEX[fl, fIndex] +
@@ -470,9 +430,7 @@ namespace mar2026.Classes
                 KTRL = JetTableOpen(fl);
             }
 
-            if (VSOFT_LOG)
-                WriteLog("GETOG ", fl, fIndex, fKey);
-
+            
             fKey = SetSpacing(fKey, FLINDEX_LEN[fl, fIndex]);
 
             try
@@ -515,9 +473,7 @@ namespace mar2026.Classes
 
             KEY_INDEX[fl] = fIndex;
             KEY_BUF[fl] = FVT[fl, fIndex];
-            if (VSOFT_LOG)
-                WriteLog("INSERT", fl, fIndex, string.Empty);
-
+            
             if (fl == TABLE_JOURNAL)
             {
                 DKTRL_CUMUL += Convert.ToDecimal(RS_MAR[TABLE_JOURNAL].Fields["v068"].Value);
@@ -607,7 +563,7 @@ namespace mar2026.Classes
                     return;
                 }
 
-                if (ACTIVE_BOOKYEAR)
+                if (ACTIVE_BOOKYEAR == 0)
                 {
                     RecordToField(TABLE_LEDGERACCOUNTS);
                     AdoInsertToRecord(TABLE_LEDGERACCOUNTS,
@@ -637,17 +593,17 @@ namespace mar2026.Classes
                 case 0:
                     break;
                 case 5:
-                    MSG = "Dergelijke ID.Kode Bestaat reeds : " + KEY_BUF[fl] + " : " + fl;
-                    MessageBox.Show(MSG);
+                    string msg = "Dergelijke ID.Kode Bestaat reeds : " + KEY_BUF[fl] + " : " + fl;
+                    MessageBox.Show(msg);
                     break;
                 case 46:
-                    MSG = "TABLEDEF_ONT werd geopend in READING-modus." + Environment.NewLine +
-                          "Schrijven is niet mogelijk...";
-                    MessageBox.Show(MSG, "Database beveiliging");
+                    string msg2 = "TABLEDEF_ONT werd geopend in READING-modus." + Environment.NewLine +
+                                  "Schrijven is niet mogelijk...";
+                    MessageBox.Show(msg2, "Database beveiliging");
                     break;
                 default:
-                    MSG = "Stopkode " + KTRL + " tijdens invoegen nieuwe record.";
-                    MessageBox.Show(MSG);
+                    string msg3 = "Stopkode " + KTRL + " tijdens invoegen nieuwe record.";
+                    MessageBox.Show(msg3);
                     break;
             }
         }
@@ -662,9 +618,7 @@ namespace mar2026.Classes
         public static void JetLast(int fl, int fIndex)
         {
             JetTableClose(fl);
-            if (VSOFT_LOG)
-                WriteLog("LAST  ", fl, fIndex, string.Empty);
-
+            
             SQL_MSG[fl] = "SELECT TOP 1 * FROM " + JET_TABLENAME[fl] +
                           " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " DESC";
             KTRL = 0;
@@ -687,9 +641,7 @@ namespace mar2026.Classes
         public static void JetNext(int fl, int fIndex, string keyBefore)
         {
             JetTableClose(fl);
-            if (VSOFT_LOG)
-                WriteLog("NEXT  ", fl, 0, string.Empty);
-
+            
             SQL_MSG[fl] = "SELECT TOP 1 * FROM " + JET_TABLENAME[fl] +
                           " WHERE " + JETTABLEUSE_INDEX[fl, fIndex] + " > '" + keyBefore + "'" +
                           " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
@@ -745,9 +697,7 @@ namespace mar2026.Classes
         public static void JetPrev(int fl, int fIndex, string keyBefore)
         {
             JetTableClose(fl);
-            if (VSOFT_LOG)
-                WriteLog("PREV  ", fl, 0, string.Empty);
-
+            
             SQL_MSG[fl] = "SELECT TOP 1 * FROM " + JET_TABLENAME[fl] +
                           " WHERE " + JETTABLEUSE_INDEX[fl, fIndex] + " < '" + keyBefore + "'" +
                           " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " DESC";
@@ -780,9 +730,7 @@ namespace mar2026.Classes
             {
                 RS_MAR[fl].Fields["dnnsync"].Value = false;
             }
-            if (VSOFT_LOG)
-                WriteLog("UPDATE", fl, fIndex, string.Empty);
-
+            
             try
             {
                 RS_MAR[fl].Update();
@@ -841,7 +789,7 @@ namespace mar2026.Classes
                     AdoInsertToRecord(
                         fl,
                         Convert.ToString(RS_MAR[fl].Fields[VBC[fl, t]].Value),
-                        VBC[fl, t]);
+                        VBC[fl, t] +" ");
                     t++;
                 }
             }
@@ -1009,7 +957,7 @@ namespace mar2026.Classes
                 MessageBox.Show(
                     "Tellers Stopkode " + KTRL.ToString() +
                     ", voor setup-tellersleutel " + tlString + Environment.NewLine + Environment.NewLine +
-                    "Overloop ALLE setup instellingen vooraleer �nig boekjaar op te starten !" + Environment.NewLine +
+                    "Overloop ALLE setup instellingen vooraleer énig boekjaar op te starten !" + Environment.NewLine +
                     "Wij staan tot uw beschikking om U hierbij te helpen.");
             }
             else
@@ -1027,6 +975,187 @@ namespace mar2026.Classes
 
             JetTableClose(TABLE_COUNTERS);
             return string.Empty;
+        }
+
+        public static void TeleBibPage(int fl)
+        {
+            int flInput = 0;
+            string ffDefinitie;
+            string dummyString;
+            string dummYtje;
+            int ktrlAantal;
+
+            decimal curBedrag;
+            int t;
+
+            int result = 0; // False
+
+            try
+            {
+                string lokaalBestand;
+                if (fl != TABLE_COUNTERS)
+                {
+                    lokaalBestand = Left(TABLEDEF_ONT[fl], 3);
+                }
+                else
+                {
+                    lokaalBestand = "00";
+                }
+
+                string programmaLokatieHier = Application.StartupPath + "\\";
+
+                string defFolder = Path.Combine(programmaLokatieHier, "Def");
+                string baseDefPath = Path.Combine(defFolder, lokaalBestand + ".Def");
+                string userDefPath = Path.Combine(defFolder, lokaalBestand + "U.Def");
+                string brokerDefPath = Path.Combine(defFolder, lokaalBestand + "M.Def");
+
+                if (!File.Exists(baseDefPath))
+                {
+                    MessageBox.Show("Geen VsoftBib definitie " + baseDefPath);                    
+                }
+
+                // EerstEnVooral:
+                if (!File.Exists(userDefPath))
+                {
+                    goto GeenUserVoorkeur;
+                }
+                else
+                {
+                    t = 0;
+                    flInput = 1; // FreeFile() placeholder, not used with StreamReader
+
+                    using (var sr = new StreamReader(userDefPath))
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            // VB Input reads 4 comma‑separated values:
+                            // TELEBIB_CODE(T), TELEBIB_TEXT(T), TELEBIB_TYPE(T), TELEBIB_LENGHT(T)
+                            string line = sr.ReadLine();
+                            if (string.IsNullOrWhiteSpace(line))
+                            {
+                                continue;
+                            }
+
+                            var parts = line.Split(',');
+                            if (parts.Length < 4)
+                            {
+                                continue;
+                            }
+
+                            TELEBIB_CODE[t] = parts[0].Trim().Trim('"');
+                            TELEBIB_TEXT[t] = parts[1].Trim().Trim('"');
+                            TELEBIB_TYPE[t] = parts[2].Trim().Trim('"');
+
+                            if (!int.TryParse(parts[3].Trim().Trim('"'), out TELEBIB_LENGHT[t]))
+                            {
+                                TELEBIB_LENGHT[t] = 0;
+                            }
+
+                            VBC[fl, t] = Mid(TELEBIB_CODE[t], 5, 4);
+                            t++;
+                        }
+                    }
+
+                    VBC[fl, t] = string.Empty;
+                    TELEBIB_CODE[t] = string.Empty;
+                    TELEBIB_LAST = t - 1;
+                    result = 1;                    
+                }
+
+            GeenUserVoorkeur:
+                flInput = 1;
+
+                using (var sr = new StreamReader(baseDefPath))
+                {
+                    t = 0;
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            continue;
+                        }
+
+                        var parts = line.Split(',');
+                        if (parts.Length < 4)
+                        {
+                            continue;
+                        }
+
+                        TELEBIB_CODE[t] = parts[0].Trim().Trim('"');
+                        TELEBIB_TEXT[t] = parts[1].Trim().Trim('"');
+                        TELEBIB_TYPE[t] = parts[2].Trim().Trim('"');
+
+                        if (!int.TryParse(parts[3].Trim().Trim('"'), out TELEBIB_LENGHT[t]))
+                        {
+                            TELEBIB_LENGHT[t] = 0;
+                        }
+
+                        VBC[fl, t] = Mid(TELEBIB_CODE[t], 5, 4);
+                        t++;
+                    }
+                }
+
+                VBC[fl, t] = string.Empty;
+                TELEBIB_LAST = t - 1;
+                TELEBIB_CODE[t] = string.Empty;
+                result = 1;
+
+            MakelaarIn:
+                if (string.IsNullOrWhiteSpace(ProducentNummer))
+                {
+                    // nothing
+                }
+                else if (!File.Exists(brokerDefPath))
+                {
+                    // nothing
+                }
+                else
+                {
+                    flInput = 1;
+
+                    using (var sr = new StreamReader(brokerDefPath))
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            string line = sr.ReadLine();
+                            if (string.IsNullOrWhiteSpace(line))
+                            {
+                                continue;
+                            }
+
+                            var parts = line.Split(',');
+                            if (parts.Length < 4)
+                            {
+                                continue;
+                            }
+
+                            TELEBIB_CODE[t] = parts[0].Trim().Trim('"');
+                            TELEBIB_TEXT[t] = parts[1].Trim().Trim('"');
+                            TELEBIB_TYPE[t] = parts[2].Trim().Trim('"');
+
+                            if (!int.TryParse(parts[3].Trim().Trim('"'), out TELEBIB_LENGHT[t]))
+                            {
+                                TELEBIB_LENGHT[t] = 0;
+                            }
+
+                            VBC[fl, t] = Mid(TELEBIB_CODE[t], 5, 4);
+                            t++;
+                        }
+                    }
+
+                    VBC[fl, t] = string.Empty;
+                    TELEBIB_LAST = t - 1;
+                    TELEBIB_CODE[t] = string.Empty;
+                }
+
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Telebibinlaadfout " + ex.Message, "TeleBibPage");
+                
+            }
         }
     }
 }
