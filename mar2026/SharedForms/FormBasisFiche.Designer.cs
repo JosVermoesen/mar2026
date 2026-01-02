@@ -41,19 +41,20 @@ namespace mar2026
             this.ButtonEdit = new System.Windows.Forms.Button();
             this.ButtonRemove = new System.Windows.Forms.Button();
             this.ButtonSearchOn = new System.Windows.Forms.Button();
+            this.MaskedTextBoxDescription = new System.Windows.Forms.MaskedTextBox();
             this.SuspendLayout();
             // 
             // ComboBoxSearchOn
             // 
             this.ComboBoxSearchOn.FormattingEnabled = true;
-            this.ComboBoxSearchOn.Location = new System.Drawing.Point(116, 111);
+            this.ComboBoxSearchOn.Location = new System.Drawing.Point(113, 130);
             this.ComboBoxSearchOn.Name = "ComboBoxSearchOn";
             this.ComboBoxSearchOn.Size = new System.Drawing.Size(240, 21);
             this.ComboBoxSearchOn.TabIndex = 0;
             // 
             // ButtonFirst
             // 
-            this.ButtonFirst.Location = new System.Drawing.Point(116, 43);
+            this.ButtonFirst.Location = new System.Drawing.Point(113, 62);
             this.ButtonFirst.Name = "ButtonFirst";
             this.ButtonFirst.Size = new System.Drawing.Size(63, 23);
             this.ButtonFirst.TabIndex = 1;
@@ -63,14 +64,14 @@ namespace mar2026
             // 
             // MasketEditBoxInfo
             // 
-            this.MasketEditBoxInfo.Location = new System.Drawing.Point(116, 12);
+            this.MasketEditBoxInfo.Location = new System.Drawing.Point(113, 12);
             this.MasketEditBoxInfo.Name = "MasketEditBoxInfo";
             this.MasketEditBoxInfo.Size = new System.Drawing.Size(240, 20);
             this.MasketEditBoxInfo.TabIndex = 2;
             // 
             // ButtonLast
             // 
-            this.ButtonLast.Location = new System.Drawing.Point(116, 72);
+            this.ButtonLast.Location = new System.Drawing.Point(113, 91);
             this.ButtonLast.Name = "ButtonLast";
             this.ButtonLast.Size = new System.Drawing.Size(63, 23);
             this.ButtonLast.TabIndex = 3;
@@ -80,7 +81,7 @@ namespace mar2026
             // 
             // ButtonPrev
             // 
-            this.ButtonPrev.Location = new System.Drawing.Point(185, 72);
+            this.ButtonPrev.Location = new System.Drawing.Point(182, 91);
             this.ButtonPrev.Name = "ButtonPrev";
             this.ButtonPrev.Size = new System.Drawing.Size(63, 23);
             this.ButtonPrev.TabIndex = 5;
@@ -90,7 +91,7 @@ namespace mar2026
             // 
             // ButtonNext
             // 
-            this.ButtonNext.Location = new System.Drawing.Point(185, 43);
+            this.ButtonNext.Location = new System.Drawing.Point(182, 62);
             this.ButtonNext.Name = "ButtonNext";
             this.ButtonNext.Size = new System.Drawing.Size(63, 23);
             this.ButtonNext.TabIndex = 4;
@@ -101,7 +102,7 @@ namespace mar2026
             // ButtonMinimize
             // 
             this.ButtonMinimize.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ButtonMinimize.Location = new System.Drawing.Point(263, 72);
+            this.ButtonMinimize.Location = new System.Drawing.Point(260, 91);
             this.ButtonMinimize.Name = "ButtonMinimize";
             this.ButtonMinimize.Size = new System.Drawing.Size(93, 23);
             this.ButtonMinimize.TabIndex = 7;
@@ -111,7 +112,7 @@ namespace mar2026
             // 
             // ButtonRelating
             // 
-            this.ButtonRelating.Location = new System.Drawing.Point(263, 43);
+            this.ButtonRelating.Location = new System.Drawing.Point(260, 62);
             this.ButtonRelating.Name = "ButtonRelating";
             this.ButtonRelating.Size = new System.Drawing.Size(93, 23);
             this.ButtonRelating.TabIndex = 6;
@@ -131,18 +132,19 @@ namespace mar2026
             // 
             // ButtonRemove
             // 
-            this.ButtonRemove.Location = new System.Drawing.Point(12, 72);
+            this.ButtonRemove.Location = new System.Drawing.Point(9, 91);
             this.ButtonRemove.Name = "ButtonRemove";
             this.ButtonRemove.Size = new System.Drawing.Size(93, 23);
             this.ButtonRemove.TabIndex = 9;
             this.ButtonRemove.TabStop = false;
             this.ButtonRemove.Text = "Verwijderen";
             this.ButtonRemove.UseVisualStyleBackColor = true;
+            this.ButtonRemove.Visible = false;
             this.ButtonRemove.Click += new System.EventHandler(this.ButtonRemove_Click);
             // 
             // ButtonSearchOn
             // 
-            this.ButtonSearchOn.Location = new System.Drawing.Point(12, 111);
+            this.ButtonSearchOn.Location = new System.Drawing.Point(9, 130);
             this.ButtonSearchOn.Name = "ButtonSearchOn";
             this.ButtonSearchOn.Size = new System.Drawing.Size(93, 23);
             this.ButtonSearchOn.TabIndex = 10;
@@ -150,13 +152,22 @@ namespace mar2026
             this.ButtonSearchOn.UseVisualStyleBackColor = true;
             this.ButtonSearchOn.Click += new System.EventHandler(this.ButtonSearchOn_Click);
             // 
+            // MaskedTextBoxDescription
+            // 
+            this.MaskedTextBoxDescription.Enabled = false;
+            this.MaskedTextBoxDescription.Location = new System.Drawing.Point(113, 38);
+            this.MaskedTextBoxDescription.Name = "MaskedTextBoxDescription";
+            this.MaskedTextBoxDescription.Size = new System.Drawing.Size(240, 20);
+            this.MaskedTextBoxDescription.TabIndex = 11;
+            // 
             // FormBasisFiche
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.ButtonMinimize;
-            this.ClientSize = new System.Drawing.Size(365, 152);
+            this.ClientSize = new System.Drawing.Size(364, 161);
             this.ControlBox = false;
+            this.Controls.Add(this.MaskedTextBoxDescription);
             this.Controls.Add(this.ButtonSearchOn);
             this.Controls.Add(this.ButtonRemove);
             this.Controls.Add(this.ButtonEdit);
@@ -193,5 +204,6 @@ namespace mar2026
         private Button ButtonEdit;
         private Button ButtonRemove;
         private Button ButtonSearchOn;
+        private MaskedTextBox MaskedTextBoxDescription;
     }
 }

@@ -41,13 +41,13 @@ namespace mar2026.Forms
                 RadioButtonServer.Checked = true;
                 // Disable basis(4) equivalent if you have one on main form
                 // if (Application.OpenForms["FormMim"] is FormMim mim)
-                    //TODO? mim.SetBasis4Enabled(false);
+                //TODO? mim.SetBasis4Enabled(false);
             }
             else
             {
                 RadioButtonLocal.Checked = true;
                 // if (Application.OpenForms["FormMim"] is FormMim mim)
-                    // mim.SetBasis4Enabled(true);
+                // mim.SetBasis4Enabled(true);
             }
 
             VSF_PRO = false;
@@ -203,7 +203,7 @@ namespace mar2026.Forms
                     SaveText("BedrijfOpenen", "DataDefault", "server");
                     ButtonCompact.Enabled = false;
                     // if (Application.OpenForms["FormMim"] is FormMim mim)
-                        // mim.SetBasis4Enabled(false);
+                    // mim.SetBasis4Enabled(false);
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace mar2026.Forms
                     SaveText("BedrijfOpenen", "DataDefault", "lokaal");
                     ButtonCompact.Enabled = true;
                     // if (Application.OpenForms["FormMim"] is FormMim mim)
-                        // mim.SetBasis4Enabled(true);
+                    // mim.SetBasis4Enabled(true);
                 }
                 LOCATION_ = TextBoxLocation.Text.TrimEnd('\\') + "\\";
                 FillCompanyList();
@@ -223,10 +223,10 @@ namespace mar2026.Forms
         }
 
         private void ListViewCompanies_DoubleClick(object sender, EventArgs e)
-        {            
+        {
             DoOpenCompany();
         }
-                
+
         private void ButtonnOk_Click(object sender, EventArgs e)
         {
             DoOpenCompany();
@@ -254,8 +254,8 @@ namespace mar2026.Forms
                 var fiche = ModLibs.BasisB[i];
                 fiche.Enabled = true;
                 fiche.WindowState = FormWindowState.Minimized;
-                fiche.Width = 381;
-                fiche.Height = 191;
+                fiche.Width = 380;
+                fiche.Height = 200;
                 fiche.BringToFront();
                 fiche.Activate();
             }
@@ -299,7 +299,7 @@ namespace mar2026.Forms
                 {
                     cnn = new Connection();
                     cnn.Open(connString);
-                    MSG = "Huidige database in JetVersie 4.x vernieuwen\n" + 
+                    MSG = "Huidige database in JetVersie 4.x vernieuwen\n" +
                           "Microsoft ADO Versie " + cnn.Version + "\n\n" +
                           "LOCATION_ : " + mdvPath;
                 }

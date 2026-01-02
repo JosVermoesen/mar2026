@@ -317,13 +317,13 @@ namespace mar2026.Classes
                 return string.Empty;
             }
         }
-        
+
         public static object XrsMar(int fl, string tbs)
         {
             var value = RS_MAR[fl].Fields[tbs].Value;
             return (value == null || value is System.DBNull) ? string.Empty : value;
         }
-        
+
         public static object ObjectValue(object dbWaarde)
         {
             return (dbWaarde == null || dbWaarde is System.DBNull) ? string.Empty : dbWaarde;
@@ -441,7 +441,7 @@ namespace mar2026.Classes
             // Keep your existing C# JetTableOpen implementation.
             throw new System.NotImplementedException();
         }
-        
+
         public static void JetTableClose(int fl)
         {
             throw new System.NotImplementedException();
@@ -652,7 +652,7 @@ namespace mar2026.Classes
 
             return tlbr.Substring(start, end - start);
         }
-                
+
         public static bool AdxKolom(string tbNaam, string clNaam, int clType, int clLengte)
         {
             // Uses ADOX via late binding to avoid adding a hard reference.
@@ -955,7 +955,7 @@ namespace mar2026.Classes
                 "dd/MM/yyyy",
                 System.Globalization.CultureInfo.InvariantCulture);
             mim.toolStripBookingDateNow.Text = bjPerDat.DatumVerwerking.Value.ToString();
-            
+
             bjPerDat.CmbPeriodeBoekjaar.Items.Clear();
 
             // VB6 netVoorbereiden: create .OXT from DEFxx.OCT
@@ -1010,7 +1010,7 @@ namespace mar2026.Classes
                 AD_NTDB = new Connection();
                 AD_NTDB.Open(JET_CONNECT);
 
-                BA_MODUS = 1;                
+                BA_MODUS = 1;
             }
             catch (System.Exception ex)
             {
@@ -1090,7 +1090,7 @@ namespace mar2026.Classes
                             "Index '" + caption + "' van tabel '" + JET_TABLENAME[t] + "' bestaat niet meer !!!",
                             "InitBestanden",
                             MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);                     
+                            MessageBoxIcon.Warning);
                     }
                 }
 
@@ -1246,7 +1246,7 @@ namespace mar2026.Classes
                 MessageBox.Show(ex.Message, "RecordToVeld");
             }
         }
-        
+
         public static void BGet(int fl, int fIndex, string fSleutel)
         {
             int probeerTellertje = 0;
@@ -1298,7 +1298,7 @@ namespace mar2026.Classes
                 goto bGetNogEens;
             }
         }
-        
+
         /// <summary>
         /// VB6 Dec(fGetal, fMasker): Format a number with a given mask and ensure
         /// the decimal separator is '.' and total length matches the mask.
@@ -1320,7 +1320,7 @@ namespace mar2026.Classes
 
             return formatted;
         }
-        
+
         /// <summary>
         /// DB control helper for TABLE_LEDGERACCOUNTS: show nearby records around a key
         /// using the MinimumIndeling table. This is a direct, minimal port of DbKontrole.
@@ -1436,7 +1436,7 @@ namespace mar2026.Classes
                 return string.Empty;
             }
         }
-        
+
         /// <summary>
         /// Format and pad a string to a fixed length (VB6 vSet equivalent).
         /// Delegates to ModDatabase.SetSpacing for core logic.
@@ -1535,7 +1535,7 @@ namespace mar2026.Classes
 
             return result;
         }
-        
+
         private static object SafeDbValue(object dbValue)
         {
             return (dbValue == null || dbValue is DBNull) ? string.Empty : dbValue;
@@ -1552,7 +1552,7 @@ namespace mar2026.Classes
                 return false;
             }
         }
-        
+
         public static string GetFileSize(string source)
         {
             try
@@ -1565,7 +1565,7 @@ namespace mar2026.Classes
                 return "0";
             }
         }
-        
+
         public static bool ValidateNumeric(string text)
         {
             return string.IsNullOrEmpty(text) ||
@@ -1574,7 +1574,7 @@ namespace mar2026.Classes
                    text == "." ||
                    double.TryParse(text, out _);
         }
-                
+
         public static bool IsSchrikkelJaar(int jaar)
         {
             try
@@ -1587,7 +1587,7 @@ namespace mar2026.Classes
                 return false;
             }
         }
-        
+
         /// <summary>
         /// Initialize FL_NUMBEROFINDEXEN, JETTABLEUSE_INDEX, FLINDEX_LEN, FLINDEX_CAPTION
         /// for all main tables and verify Telebib page definitions. Returns false if
@@ -1640,7 +1640,7 @@ namespace mar2026.Classes
 
             FL_NUMBEROFINDEXEN[TABLE_DUMMY] = 0;
             JETTABLEUSE_INDEX[TABLE_DUMMY, 0] = "v089 "; FLINDEX_LEN[TABLE_DUMMY, 0] = 20; FLINDEX_CAPTION[TABLE_DUMMY, 0] = "Plaatselijk sorteren";
-                        
+
             return ok;
         }
 
@@ -1712,7 +1712,7 @@ namespace mar2026.Classes
 
             return Math.Abs(rest - double.Parse(controle)) < 0.0001;
         }
-        
+
         public static bool CopyFile(string sourcePath, string targetPath, string fileToCopy)
         {
             try
@@ -1900,7 +1900,7 @@ namespace mar2026.Classes
             string year = dateAsKey.Substring(0, 4);
             return day + "/" + month + "/" + year;
         }
-        
+
         public static string FmarBoxText(string marBoxNumber, string taal, string marBoxOption)
         {
             string zoekTekst;
@@ -1925,7 +1925,7 @@ namespace mar2026.Classes
             // return ZoekEnPlaats(KeuzeVSF.NTBoxLijst, zoekTekst, 0, 0, marBoxOption);
             return string.Empty;
         }
-        
+
         public static string SleutelDok(int recordNr)
         {
             FL99_RECORD = String99(READING_LOCK, recordNr);
@@ -1949,7 +1949,7 @@ namespace mar2026.Classes
             return voorLetter + PERIOD_FROMTO.Substring(0, 4) +
                    (int.TryParse(FL99_RECORD, out int v) ? (v + 1).ToString("00000") : "00001");
         }
-        
+
         public static string String99(bool lockModus, int szNummer)
         {
             string tlString = "s" + szNummer.ToString("000");
@@ -2212,7 +2212,6 @@ namespace mar2026.Classes
             }
         }
 
-
         public static int BOpen(int fl)
         {
             // If already open, just return 0 (success)
@@ -2230,25 +2229,29 @@ namespace mar2026.Classes
             {
                 RS_MAR[fl].CursorLocation = CursorLocationEnum.adUseServer;
 
-                    if (fl == TABLE_COUNTERS)
-                    {
-                        RS_MAR[fl].Open(
-                            JET_TABLENAME[fl],
-                            AD_NTDB,
-                            CursorTypeEnum.adOpenKeyset,
-                            LockTypeEnum.adLockOptimistic,
-                            (int)CommandTypeEnum.adCmdTableDirect);
-                    }
-                    else
-                    {
-                        RS_MAR[fl].Open(
-                            JET_TABLENAME[fl],
-                            AD_NTDB,
-                            CursorTypeEnum.adOpenKeyset,
-                            LockTypeEnum.adLockOptimistic,
-                            (int)CommandTypeEnum.adCmdTableDirect);
-                    }
-                
+                if (fl == TABLE_COUNTERS)
+                {
+                    RS_MAR[fl].Open(
+                        JET_TABLENAME[fl],
+                        AD_NTDB,
+                        CursorTypeEnum.adOpenKeyset,
+                        LockTypeEnum.adLockOptimistic,
+                        (int)CommandTypeEnum.adCmdTableDirect);
+                }
+                else
+                {
+                    string testSQL = "SELECT * FROM " + JET_TABLENAME[fl] +
+                              " ORDER BY " + JETTABLEUSE_INDEX[fl, 0] + " ASC";
+                    SQL_MSG[fl] = testSQL;
+
+                    RS_MAR[fl].Open(
+                        SQL_MSG[fl],
+                        AD_NTDB,
+                        CursorTypeEnum.adOpenKeyset,
+                        LockTypeEnum.adLockOptimistic,
+                        (int)CommandTypeEnum.adCmdTableDirect);
+                }
+
 
                 // ntRS(Fl).LockEdits = False  'not applicable in ADODB.Recordset
 
