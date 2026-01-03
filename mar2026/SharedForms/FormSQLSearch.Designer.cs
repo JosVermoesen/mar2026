@@ -105,6 +105,7 @@
             this.TextBoxToSearch.Name = "TextBoxToSearch";
             this.TextBoxToSearch.Size = new System.Drawing.Size(375, 20);
             this.TextBoxToSearch.TabIndex = 7;
+            this.TextBoxToSearch.TextChanged += new System.EventHandler(this.TextBoxToSearch_TextChanged);
             // 
             // sqkResultListView
             // 
@@ -123,6 +124,7 @@
             this.Sortering.Name = "Sortering";
             this.Sortering.Size = new System.Drawing.Size(310, 21);
             this.Sortering.TabIndex = 9;
+            this.Sortering.SelectedIndexChanged += new System.EventHandler(this.Sortering_SelectedIndexChanged);
             // 
             // ButtonSearchLike
             // 

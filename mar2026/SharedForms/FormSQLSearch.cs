@@ -7,18 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using static mar2026.Classes.ModLibs;
-using static mar2026.Classes.ModDatabase;
 using static mar2026.Classes.AllFunctions;
+using static mar2026.Classes.ModDatabase;
+using static mar2026.Classes.ModLibs;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace mar2026.SharedForms
 {
     public partial class FormSQLSearch : Form
     {
-        public int flHere;
-        public int indexHere;
-        public string StartKey;
+        string sqlDummy;
 
         // Represents the list of sort definitions (VB6 Sortering.List)
         // Expected format per item:  "+v001;Omschrijving"  or "-v002;Andere omschrijving"
@@ -31,36 +29,33 @@ namespace mar2026.SharedForms
 
         private void FormSQLSearch_Load(object sender, EventArgs e)
         {
-            // VB6:
-            // Caption = Caption + ": " + bstNaam(SharedFl)
             Text = Text + ": " + bstNaam[SHARED_FL];
+            sqkResultListView.Clear();
 
-            // VB6: VulcmbSortering
-            // -> here assumed to be a method that fills SorteringListBox from JETTABLEUSE_INDEX / FLINDEX_CAPTION
+            if (SHARED_FL == 1)
+            sqlDummy = "SELECT " +
+                "A110 AS [Nummer], " +
+                "A100 AS [Naam1], " +
+                "A101 AS [Voornaam], " +
+                "A104 & ' ' & A105 & ' ' & A106 AS [Straat], " +
+                "A108 AS [Plaats] " +
+                "FROM Klanten " +
+                "WHERE A100 Like 'van%' " +
+                "ORDER BY A100 ASC";
+
+            rtbSQLTekst.Text = sqlDummy;
+
             FillSortering();
 
-            // VB6:
-            // If InStr(GridText, "@Beperk@") Then
-            //     txtTeZoeken.Text = Left(GridText, 2) + "%"
-            //     cmdZoeken_Click
-            // ElseIf GridText <> "" Then
-            //     txtTeZoeken.Text = GridText + "%"
-            //     cmdZoeken_Click
-            // Else
-            //     txtTeZoeken.Text = "%"
-            // End If
-
-            var gridText = StartKey ?? string.Empty;
-
-            if (gridText.IndexOf("@Beperk@", StringComparison.OrdinalIgnoreCase) >= 0 &&
-                gridText.Length >= 2)
+            if (GRIDTEXT.IndexOf("@Beperk@", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                GRIDTEXT.Length >= 2)
             {
-                TextBoxToSearch.Text = gridText.Substring(0, 2) + "%";
+                TextBoxToSearch.Text = GRIDTEXT.Substring(0, 2) + "%";
                 ButtonSearch_Click(sender, e);
             }
-            else if (!string.IsNullOrEmpty(gridText))
+            else if (!string.IsNullOrEmpty(GRIDTEXT))
             {
-                TextBoxToSearch.Text = gridText + "%";
+                TextBoxToSearch.Text = GRIDTEXT + "%";
                 ButtonSearch_Click(sender, e);
             }
             else
@@ -77,12 +72,12 @@ namespace mar2026.SharedForms
 
         private void ButtonSearch_Click(object sender, EventArgs e)
         {        
-            if (SorteringListBox == null || SorteringListBox.Items.Count == 0)
+            if (Sortering == null || Sortering.Items.Count == 0)
             {
                 return;
             }
 
-            var selectedItem = Convert.ToString(SorteringListBox.SelectedItem ?? string.Empty);
+            var selectedItem = Convert.ToString(Sortering.SelectedItem ?? string.Empty);
             if (string.IsNullOrEmpty(selectedItem))
             {
                 return;
@@ -112,13 +107,8 @@ namespace mar2026.SharedForms
         /// </summary>
         private void FillSortering()
         {
-            if (SorteringListBox == null)
-            {
-                return;
-            }
-
-            SorteringListBox.Items.Clear();
-
+            Sortering.Items.Clear();
+            
             // Build list from FLINDEX_CAPTION / JETTABLEUSE_INDEX
             // Default: ascending (+). Adapt if you have stored sort directions.
             for (int i = 0; i <= FL_NUMBEROFINDEXEN[SHARED_FL]; i++)
@@ -133,12 +123,12 @@ namespace mar2026.SharedForms
 
                 // VB list format: "+v001;Omschrijving"
                 string item = "+" + veld.Trim() + ";" + caption.Trim();
-                SorteringListBox.Items.Add(item);
+                Sortering.Items.Add(item);
             }
 
-            if (SorteringListBox.Items.Count > 0)
+            if (Sortering.Items.Count > 0)
             {
-                SorteringListBox.SelectedIndex = 0;
+                Sortering.SelectedIndex = 0;
             }
         }
 
@@ -156,8 +146,8 @@ namespace mar2026.SharedForms
         /// <param name="comboTekst">VB6 ComboTekst parameter (sort specification string).</param>
         public void SqlRefreshText(string comboTekst)
         {
-            string sorteerIndex = string.Empty;
-            string sorteerOrde = string.Empty;
+            string sorteerIndex = "";
+            string sorteerOrde = "";
             string sleuteltje;
             int telOrde = 0;
 
@@ -296,11 +286,11 @@ namespace mar2026.SharedForms
             bool deLaatste = false;
 
             // eerst eerste index verzekeren !
-            if (SorteringListBox != null && SorteringListBox.Items.Count > 0)
+            if (Sortering != null && Sortering.Items.Count > 0)
             {
-                for (int i = 0; i < SorteringListBox.Items.Count; i++)
+                for (int i = 0; i < Sortering.Items.Count; i++)
                 {
-                    string item = Convert.ToString(SorteringListBox.Items[i] ?? string.Empty);
+                    string item = Convert.ToString(Sortering.Items[i] ?? string.Empty);
                     int semiPos = item.IndexOf(";", StringComparison.Ordinal);
                     if (semiPos <= 0)
                     {
@@ -314,7 +304,7 @@ namespace mar2026.SharedForms
                     {
                         string alias = item.Substring(semiPos + 1);
                         msg += " " + veldNaam + " AS [" + alias + "],";
-                        if (i == SorteringListBox.Items.Count - 1)
+                        if (i == Sortering.Items.Count - 1)
                         {
                             deLaatste = true;
                         }
@@ -334,11 +324,11 @@ namespace mar2026.SharedForms
             }
 
             // dan de rest bijvoegen
-            if (SorteringListBox != null && SorteringListBox.Items.Count > 0)
+            if (Sortering != null && Sortering.Items.Count > 0)
             {
-                for (int i = 0; i < SorteringListBox.Items.Count; i++)
+                for (int i = 0; i < Sortering.Items.Count; i++)
                 {
-                    string item = Convert.ToString(SorteringListBox.Items[i] ?? string.Empty);
+                    string item = Convert.ToString(Sortering.Items[i] ?? string.Empty);
                     int semiPos = item.IndexOf(";", StringComparison.Ordinal);
                     if (semiPos <= 0)
                     {
@@ -357,9 +347,9 @@ namespace mar2026.SharedForms
                     msg += " " + veldNaam + " AS [" + alias + "]";
 
                     if (!deLaatste ||
-                        SorteringListBox.Items.Count != 1 &&
-                        !(deLaatste && i == SorteringListBox.Items.Count - 2) &&
-                        i < SorteringListBox.Items.Count - 1)
+                        Sortering.Items.Count != 1 &&
+                        !(deLaatste && i == Sortering.Items.Count - 2) &&
+                        i < Sortering.Items.Count - 1)
                     {
                         msg += ",";
                     }
@@ -372,6 +362,31 @@ namespace mar2026.SharedForms
                    " ORDER BY " + sorteerOrde;
 
             rtbSQLTekst.Text = msg;
-        }                
+        }
+
+        private void Sortering_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //cmdZoeken.Caption = "Zoeken";
+            //SQLVernieuwTekst(Sortering.Text);
+            //txtTeZoeken.Text = "%";
+            //Schoon();
+            
+        }
+
+        private void TextBoxToSearch_TextChanged(object sender, EventArgs e)
+        {
+            // If length <= 1 and no '%' yet, append '%' and place caret before it
+            if (TextBoxToSearch.Text.Length <= 1 &&
+                TextBoxToSearch.Text.IndexOf('%') < 0)
+            {
+                // Prevent re-entrancy issues by caching the original text
+                var original = TextBoxToSearch.Text;
+                TextBoxToSearch.Text = original + "%";
+
+                // Put caret just before the '%'
+                TextBoxToSearch.SelectionStart = TextBoxToSearch.Text.Length - 1;
+                TextBoxToSearch.SelectionLength = 0;
+            }
+        }
     }
 }

@@ -130,33 +130,12 @@ namespace mar2026
 
         private void ButtonSearchOn_Click(object sender, EventArgs e)
         {
-            // Ensure a valid index is selected before opening the search form
-            if (ComboBoxSearchOn.SelectedIndex < 0)
-            {
-                MessageBox.Show(
-                    "Kies eerst een zoekveld in de lijst.",
-                    "Zoeken",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-                return;
-            }
+            SHARED_FL = flHere;
+            GRIDTEXT = MasketEditBoxInfo.Text.TrimEnd();
+            A_INDEX = ComboBoxSearchOn.SelectedIndex;
 
-            // Reset last search key before showing the dialog
-            XLOG_KEY = string.Empty;
-
-            // VB6:
-            // Select Case Fl
-            //   Case FlPolis : Venster.Show 1
-            //   Case Else    : SharedFl = Fl : aIndex = 1 : GridText = TekstInfo(0).Text : AlfaSearch.Show 1
-            //
-            // Here we only have the SQL/“AlfaSearch”‑style search.
             using (FormSQLSearch fss = new FormSQLSearch())
-            {
-                // Pass current file and index to search form
-                fss.flHere = flHere;
-                fss.indexHere = ComboBoxSearchOn.SelectedIndex;
-                fss.StartKey = MasketEditBoxInfo.Text.TrimEnd();
-
+            {                
                 var result = fss.ShowDialog(this);
                 if (result != DialogResult.OK)
                 {
