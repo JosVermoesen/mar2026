@@ -1304,5 +1304,72 @@ namespace mar2026.Classes
 
             }
         }
+
+        /// <summary>
+        /// C# translation of VB6 ToonIndexen.
+        /// Fills the Sortering list with index definitions for the given table name.
+        /// </summary>
+        /// <param name="tableName">Logical table name (e.g. &quot;Klanten&quot;).</param>
+        /// <param name="target">Target list control to receive items (&quot;+COL; IndexName&quot;).</param>
+        public static void ShowIndexes(string tableName, ListBox target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            target.Items.Clear();
+
+            // Ensure AD_NTDB is open (ADODB.Connection from ModDatabase)
+            if (AD_NTDB == null || AD_NTDB.State != (int)ADODB.ObjectStateEnum.adStateOpen)
+            {
+                MessageBox.Show(
+                    @"Databaseverbinding (AD_NTDB) is niet geopend.",
+                    @"Indexen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            ADODB.Recordset rstSchema = null;
+
+            try
+            {
+                // Equivalent of: Set rstSchema = adntDB.OpenSchema(adSchemaIndexes)
+                rstSchema = AD_NTDB.OpenSchema(ADODB.SchemaEnum.adSchemaIndexes);
+
+                while (!rstSchema.EOF)
+                {
+                    // TABLE_NAME and COLUMN_NAME come from the schema recordset
+                    var table = Convert.ToString(rstSchema.Fields["TABLE_NAME"].Value ?? string.Empty);
+                    if (string.Equals(tableName, table, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var columnName = Convert.ToString(rstSchema.Fields["COLUMN_NAME"].Value ?? string.Empty);
+                        var indexName = Convert.ToString(rstSchema.Fields["INDEX_NAME"].Value ?? string.Empty);
+
+                        // VB6: "+" & rstSchema!COLUMN_NAME & "; " & rstSchema!INDEX_NAME
+                        string item = "+" + columnName + "; " + indexName;
+                        target.Items.Add(item);
+                    }
+
+                    rstSchema.MoveNext();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    @"Fout bij ophalen van indexen: " + ex.Message,
+                    @"Indexen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (rstSchema != null && rstSchema.State == (int)ADODB.ObjectStateEnum.adStateOpen)
+                {
+                    rstSchema.Close();
+                }
+            }
+        }
     }
 }

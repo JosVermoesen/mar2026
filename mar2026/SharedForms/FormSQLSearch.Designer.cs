@@ -36,7 +36,7 @@
             this.rtbSQLTekst = new System.Windows.Forms.RichTextBox();
             this.TextBoxToSearch = new System.Windows.Forms.TextBox();
             this.sqkResultListView = new System.Windows.Forms.ListView();
-            this.Sortering = new System.Windows.Forms.ComboBox();
+            this.ComboBoxSortOn = new System.Windows.Forms.ComboBox();
             this.ButtonSearchLike = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -98,6 +98,7 @@
             this.rtbSQLTekst.Size = new System.Drawing.Size(437, 62);
             this.rtbSQLTekst.TabIndex = 6;
             this.rtbSQLTekst.Text = "";
+            this.rtbSQLTekst.TextChanged += new System.EventHandler(this.RitchTextBoxSQLSelect_TextChanged);
             // 
             // TextBoxToSearch
             // 
@@ -106,6 +107,9 @@
             this.TextBoxToSearch.Size = new System.Drawing.Size(375, 20);
             this.TextBoxToSearch.TabIndex = 7;
             this.TextBoxToSearch.TextChanged += new System.EventHandler(this.TextBoxToSearch_TextChanged);
+            this.TextBoxToSearch.Enter += new System.EventHandler(this.TextBoxToSearch_Enter);
+            this.TextBoxToSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxToSearch_KeyDown);
+            this.TextBoxToSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxToSearch_KeyPress);
             // 
             // sqkResultListView
             // 
@@ -115,16 +119,20 @@
             this.sqkResultListView.Size = new System.Drawing.Size(518, 178);
             this.sqkResultListView.TabIndex = 8;
             this.sqkResultListView.UseCompatibleStateImageBehavior = false;
+            this.sqkResultListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListViewSqlResult_ItemSelectionChanged);
             this.sqkResultListView.SelectedIndexChanged += new System.EventHandler(this.ListViewSqlResult_SelectedIndexChanged);
+            this.sqkResultListView.Click += new System.EventHandler(this.ListViewSqlResult_Click);
+            this.sqkResultListView.DoubleClick += new System.EventHandler(this.ListViewSqlResult_DoubleClick);
+            this.sqkResultListView.Enter += new System.EventHandler(this.ListViewSqlResult_Enter);
             // 
-            // Sortering
+            // ComboBoxSortOn
             // 
-            this.Sortering.FormattingEnabled = true;
-            this.Sortering.Location = new System.Drawing.Point(15, 43);
-            this.Sortering.Name = "Sortering";
-            this.Sortering.Size = new System.Drawing.Size(310, 21);
-            this.Sortering.TabIndex = 9;
-            this.Sortering.SelectedIndexChanged += new System.EventHandler(this.Sortering_SelectedIndexChanged);
+            this.ComboBoxSortOn.FormattingEnabled = true;
+            this.ComboBoxSortOn.Location = new System.Drawing.Point(15, 43);
+            this.ComboBoxSortOn.Name = "ComboBoxSortOn";
+            this.ComboBoxSortOn.Size = new System.Drawing.Size(310, 21);
+            this.ComboBoxSortOn.TabIndex = 9;
+            this.ComboBoxSortOn.SelectedIndexChanged += new System.EventHandler(this.ComboBoxSortOn_SelectedIndexChanged);
             // 
             // ButtonSearchLike
             // 
@@ -144,7 +152,7 @@
             this.CancelButton = this.ButtonClose;
             this.ClientSize = new System.Drawing.Size(545, 330);
             this.Controls.Add(this.ButtonSearchLike);
-            this.Controls.Add(this.Sortering);
+            this.Controls.Add(this.ComboBoxSortOn);
             this.Controls.Add(this.sqkResultListView);
             this.Controls.Add(this.TextBoxToSearch);
             this.Controls.Add(this.rtbSQLTekst);
@@ -172,7 +180,7 @@
         private System.Windows.Forms.RichTextBox rtbSQLTekst;
         private System.Windows.Forms.TextBox TextBoxToSearch;
         private System.Windows.Forms.ListView sqkResultListView;
-        private System.Windows.Forms.ComboBox Sortering;
+        private System.Windows.Forms.ComboBox ComboBoxSortOn;
         private System.Windows.Forms.Button ButtonSearchLike;
     }
 }

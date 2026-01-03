@@ -17,8 +17,8 @@ namespace mar2026
         public FormBasisFiche()
         {
             InitializeComponent();
-            // this.MinimumSize = new System.Drawing.Size(327, 149);
-            // this.MaximumSize = new System.Drawing.Size(327, 149);
+
+            ComboBoxSearchOn.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private void FormBasisFiche_Load(object sender, EventArgs e)

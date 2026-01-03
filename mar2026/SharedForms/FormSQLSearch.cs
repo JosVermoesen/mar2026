@@ -18,13 +18,10 @@ namespace mar2026.SharedForms
     {
         string sqlDummy;
 
-        // Represents the list of sort definitions (VB6 Sortering.List)
-        // Expected format per item:  "+v001;Omschrijving"  or "-v002;Andere omschrijving"
-        public ListBox SorteringListBox { get; set; }
-
         public FormSQLSearch()
         {
             InitializeComponent();
+            ComboBoxSortOn.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private void FormSQLSearch_Load(object sender, EventArgs e)
@@ -71,19 +68,140 @@ namespace mar2026.SharedForms
         }
 
         private void ButtonSearch_Click(object sender, EventArgs e)
-        {        
-            if (Sortering == null || Sortering.Items.Count == 0)
-            {
-                return;
-            }
-
-            var selectedItem = Convert.ToString(Sortering.SelectedItem ?? string.Empty);
+        {                    
+            var selectedItem = Convert.ToString(ComboBoxSortOn.SelectedItem ?? string.Empty);
             if (string.IsNullOrEmpty(selectedItem))
             {
                 return;
             }
 
             SqlRefreshText(selectedItem);
+        }
+        
+        private void ComboBoxSortOn_SelectedIndexChanged(object sender, EventArgs e)
+        {            
+            
+        }
+
+        private void TextBoxToSearch_TextChanged(object sender, EventArgs e)
+        {
+            // If length <= 1 and no '%' yet, append '%' and place caret before it
+            if (TextBoxToSearch.Text.Length <= 1 &&
+                TextBoxToSearch.Text.IndexOf('%') < 0)
+            {
+                // Prevent re-entrancy issues by caching the original text
+                var original = TextBoxToSearch.Text;
+                TextBoxToSearch.Text = original + "%";
+
+                // Put caret just before the '%'
+                TextBoxToSearch.SelectionStart = TextBoxToSearch.Text.Length - 1;
+                TextBoxToSearch.SelectionLength = 0;
+            }
+        }
+
+        private void TextBoxToSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            ButtonSearchLike.Text = "Zoeken";
+        }
+
+        private void TextBoxToSearch_Enter(object sender, EventArgs e)
+        {
+            ButtonSearchLike.Text = "Zoeken";
+            TextBoxToSearch.SelectionStart = 0;
+            TextBoxToSearch.SelectionLength = TextBoxToSearch.Text.Length;
+        }
+
+        private void TextBoxToSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            // VB6: On Error Resume Next – ignore focus errors
+            try
+            {
+                // Arrow keys Up/Down (and also Right in original 38..40)
+                if (e.KeyCode >= Keys.Up && e.KeyCode <= Keys.Down)
+                {
+                    if (sqkResultListView.Items.Count == 0)
+                    {
+                        return;
+                    }
+
+                    // Ensure some item is focused/selected before moving
+                    int targetColumn = A_INDEX; // desired column (subitem) to focus 
+
+                    sqkResultListView.Focus();
+
+                    // Move to first row and desired column (subitem)
+                    var firstItem = sqkResultListView.Items[0];
+                    firstItem.Selected = true;
+                    firstItem.Focused = true;
+
+                    if (targetColumn >= 0 && targetColumn < firstItem.SubItems.Count)
+                    {
+                        // There is no direct "Col" property like VB6 grid,
+                        // but having the correct item focused is generally enough.
+                        // If needed, you could visually emphasize the subitem here.
+                    }
+
+                    e.Handled = true;
+                }
+            }
+            catch
+            {
+                // Swallow any focus/navigation issues (On Error Resume Next behavior)
+            }
+        }
+
+        private void RitchTextBoxSQLSelect_TextChanged(object sender, EventArgs e)
+        {
+            cmdBewaar.Enabled = true;
+        }
+
+        
+        private void ListViewSqlResult_DoubleClick(object sender, EventArgs e)
+        {
+            // VB6: mfgLijst_DblClick -> cmdZoeken_Click
+            ButtonSearch_Click(sender, e);
+        }
+
+        private void ListViewSqlResult_Enter(object sender, EventArgs e)
+        {
+            // VB6: mfgLijst_GotFocus
+            //   cmdZoeken.Caption = "Ok"
+            //   mfgLijst_Click
+
+            ButtonSearchLike.Text = "Ok";
+            ListViewSqlResult_Click(sender, e);
+        }
+
+        private void ListViewSqlResult_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // VB6: mfgLijst_RowColChange
+            // If mfgLijst.Rows <> 2 Then mfgLijst_Click
+            //
+            // Approximation: when there is more than 1 data row selected/visible,
+            // trigger the same behaviour as clicking the grid.
+
+            if (sqkResultListView.Items.Count != 2)
+            {
+                ListViewSqlResult_Click(sender, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Common handler approximating VB6 mfgLijst_Click:
+        /// takes current row, updates XLOG_KEY/TextBoxToSearch and (optionally) performs search/OK logic.
+        /// </summary>
+        private void ListViewSqlResult_Click(object sender, EventArgs e)
+        {
+            if (sqkResultListView.FocusedItem == null ||
+                sqkResultListView.FocusedItem.SubItems == null ||
+                sqkResultListView.FocusedItem.SubItems.Count == 0)
+            {
+                return;
+            }
+
+            // Use first column as key (similar to existing SelectedIndexChanged)
+            XLOG_KEY = sqkResultListView.FocusedItem.SubItems[0].Text;
+            TextBoxToSearch.Text = XLOG_KEY;
         }
 
         private void ListViewSqlResult_SelectedIndexChanged(object sender, EventArgs e)
@@ -98,45 +216,98 @@ namespace mar2026.SharedForms
             XLOG_KEY = sqkResultListView.FocusedItem.SubItems[0].Text;
             TextBoxToSearch.Text = XLOG_KEY;
         }
-        
+
 
         /// <summary>
         /// C# equivalent of VB6 VulcmbSortering.
-        /// Populates SorteringListBox with sort definitions for SHARED_FL.
-        /// Expected item format: "+v001;Omschrijving" / "-v002;Andere omschrijving".
+        /// Populates Sortering with index definitions for SHARED_FL and
+        /// selects the entry matching FLINDEX_CAPTION(SHARED_FL, A_INDEX).
         /// </summary>
         private void FillSortering()
         {
-            Sortering.Items.Clear();
-            
-            // Build list from FLINDEX_CAPTION / JETTABLEUSE_INDEX
-            // Default: ascending (+). Adapt if you have stored sort directions.
-            for (int i = 0; i <= FL_NUMBEROFINDEXEN[SHARED_FL]; i++)
-            {
-                var veld = JETTABLEUSE_INDEX[SHARED_FL, i];
-                var caption = FLINDEX_CAPTION[SHARED_FL, i];
+            // Fill list with all indexes for this table
+            ComboBoxSortOn.Items.Clear();
 
-                if (string.IsNullOrWhiteSpace(veld) || string.IsNullOrWhiteSpace(caption))
+            if (AD_NTDB == null || AD_NTDB.State != (int)ADODB.ObjectStateEnum.adStateOpen)
+            {
+                MessageBox.Show(
+                    @"Databaseverbinding (AD_NTDB) is niet geopend.",
+                    @"Indexen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            ADODB.Recordset rstSchema = null;
+            try
+            {
+                rstSchema = AD_NTDB.OpenSchema(ADODB.SchemaEnum.adSchemaIndexes);
+
+                while (!rstSchema.EOF)
                 {
-                    continue;
+                    var table = Convert.ToString(rstSchema.Fields["TABLE_NAME"].Value ?? string.Empty);
+                    if (string.Equals(bstNaam[SHARED_FL], table, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var columnName = Convert.ToString(rstSchema.Fields["COLUMN_NAME"].Value ?? string.Empty);
+                        var indexName = Convert.ToString(rstSchema.Fields["INDEX_NAME"].Value ?? string.Empty);
+
+                        // VB6 format: "+COLUMN; IndexName"
+                        string item = "+" + columnName + "; " + indexName;
+                        ComboBoxSortOn.Items.Add(item);
+                    }
+
+                    rstSchema.MoveNext();
                 }
-
-                // VB list format: "+v001;Omschrijving"
-                string item = "+" + veld.Trim() + ";" + caption.Trim();
-                Sortering.Items.Add(item);
             }
-
-            if (Sortering.Items.Count > 0)
+            catch (Exception ex)
             {
-                Sortering.SelectedIndex = 0;
+                MessageBox.Show(
+                    @"Fout bij ophalen van indexen: " + ex.Message,
+                    @"Indexen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
+            finally
+            {
+                if (rstSchema != null && rstSchema.State == (int)ADODB.ObjectStateEnum.adStateOpen)
+                {
+                    rstSchema.Close();
+                }
+            }
+
+            // Select the entry whose caption matches FLINDEX_CAPTION(SHARED_FL, A_INDEX)
+            if (ComboBoxSortOn.Items.Count == 0)
+            {
+                return;
+            }
+
+            int indexNr = 0;
+            string wantedCaption = FLINDEX_CAPTION[SHARED_FL, A_INDEX];
+
+            if (!string.IsNullOrWhiteSpace(wantedCaption))
+            {
+                for (int t = 0; t < ComboBoxSortOn.Items.Count; t++)
+                {
+                    string item = Convert.ToString(ComboBoxSortOn.Items[t] ?? string.Empty);
+                    int semiPos = item.IndexOf(";", StringComparison.Ordinal);
+                    if (semiPos < 0 || semiPos + 2 >= item.Length)
+                    {
+                        continue;
+                    }
+
+                    string captionPart = item.Substring(semiPos + 2); // after "; "
+                    if (string.Equals(captionPart, wantedCaption, StringComparison.Ordinal))
+                    {
+                        indexNr = t;
+                        break;
+                    }
+                }
+            }
+
+            // If IndexNR Then ... ElseIf Sortering.ListCount Then ...
+            ComboBoxSortOn.SelectedIndex = indexNr > 0 ? indexNr : 0;
         }
 
-        /// <summary>
-        /// C# equivalent of VB6 cmdZoeken_Click.
-        /// Invokes SqlVernieuwTekst based on current sort selection.
-        /// </summary>
-        
 
         /// <summary>
         /// C# translation of VB6 SQLVernieuwTekst.
@@ -155,12 +326,12 @@ namespace mar2026.SharedForms
             {
                 // grdColWidth(0) = 0
                 // GRD_COLWIDTH[0] = 0;
-                                
-                sleuteltje = 
-                    "marEDB" 
-                    + SHARED_FL.ToString ("00")
+
+                sleuteltje =
+                    "marEDB"
+                    + SHARED_FL.ToString("00")
                     + comboTekst.Substring(0, comboTekst.IndexOf(";", StringComparison.Ordinal));
-                
+
 
                 while (true)
                 {
@@ -286,11 +457,11 @@ namespace mar2026.SharedForms
             bool deLaatste = false;
 
             // eerst eerste index verzekeren !
-            if (Sortering != null && Sortering.Items.Count > 0)
+            if (ComboBoxSortOn != null && ComboBoxSortOn.Items.Count > 0)
             {
-                for (int i = 0; i < Sortering.Items.Count; i++)
+                for (int i = 0; i < ComboBoxSortOn.Items.Count; i++)
                 {
-                    string item = Convert.ToString(Sortering.Items[i] ?? string.Empty);
+                    string item = Convert.ToString(ComboBoxSortOn.Items[i] ?? string.Empty);
                     int semiPos = item.IndexOf(";", StringComparison.Ordinal);
                     if (semiPos <= 0)
                     {
@@ -304,7 +475,7 @@ namespace mar2026.SharedForms
                     {
                         string alias = item.Substring(semiPos + 1);
                         msg += " " + veldNaam + " AS [" + alias + "],";
-                        if (i == Sortering.Items.Count - 1)
+                        if (i == ComboBoxSortOn.Items.Count - 1)
                         {
                             deLaatste = true;
                         }
@@ -324,11 +495,11 @@ namespace mar2026.SharedForms
             }
 
             // dan de rest bijvoegen
-            if (Sortering != null && Sortering.Items.Count > 0)
+            if (ComboBoxSortOn != null && ComboBoxSortOn.Items.Count > 0)
             {
-                for (int i = 0; i < Sortering.Items.Count; i++)
+                for (int i = 0; i < ComboBoxSortOn.Items.Count; i++)
                 {
-                    string item = Convert.ToString(Sortering.Items[i] ?? string.Empty);
+                    string item = Convert.ToString(ComboBoxSortOn.Items[i] ?? string.Empty);
                     int semiPos = item.IndexOf(";", StringComparison.Ordinal);
                     if (semiPos <= 0)
                     {
@@ -347,9 +518,9 @@ namespace mar2026.SharedForms
                     msg += " " + veldNaam + " AS [" + alias + "]";
 
                     if (!deLaatste ||
-                        Sortering.Items.Count != 1 &&
-                        !(deLaatste && i == Sortering.Items.Count - 2) &&
-                        i < Sortering.Items.Count - 1)
+                        ComboBoxSortOn.Items.Count != 1 &&
+                        !(deLaatste && i == ComboBoxSortOn.Items.Count - 2) &&
+                        i < ComboBoxSortOn.Items.Count - 1)
                     {
                         msg += ",";
                     }
@@ -364,29 +535,5 @@ namespace mar2026.SharedForms
             rtbSQLTekst.Text = msg;
         }
 
-        private void Sortering_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //cmdZoeken.Caption = "Zoeken";
-            //SQLVernieuwTekst(Sortering.Text);
-            //txtTeZoeken.Text = "%";
-            //Schoon();
-            
-        }
-
-        private void TextBoxToSearch_TextChanged(object sender, EventArgs e)
-        {
-            // If length <= 1 and no '%' yet, append '%' and place caret before it
-            if (TextBoxToSearch.Text.Length <= 1 &&
-                TextBoxToSearch.Text.IndexOf('%') < 0)
-            {
-                // Prevent re-entrancy issues by caching the original text
-                var original = TextBoxToSearch.Text;
-                TextBoxToSearch.Text = original + "%";
-
-                // Put caret just before the '%'
-                TextBoxToSearch.SelectionStart = TextBoxToSearch.Text.Length - 1;
-                TextBoxToSearch.SelectionLength = 0;
-            }
-        }
     }
 }
