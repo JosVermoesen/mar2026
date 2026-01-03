@@ -1,12 +1,11 @@
 ﻿using ADODB;
+using mar2026.Classes;
+using mar2026.SharedForms;
 using System;
 using System.IO;
 using System.Windows.Forms;
-
-using mar2026.Classes;
 using static mar2026.Classes.AllFunctions;
 using static mar2026.Classes.ModDatabase;
-
 using static mar2026.Classes.ModLibs;
 
 namespace mar2026
@@ -131,8 +130,61 @@ namespace mar2026
 
         private void ButtonSearchOn_Click(object sender, EventArgs e)
         {
+            // Ensure a valid index is selected before opening the search form
+            if (ComboBoxSearchOn.SelectedIndex < 0)
+            {
+                MessageBox.Show(
+                    "Kies eerst een zoekveld in de lijst.",
+                    "Zoeken",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
 
+            // Reset last search key before showing the dialog
+            XLOG_KEY = string.Empty;
+
+            // VB6:
+            // Select Case Fl
+            //   Case FlPolis : Venster.Show 1
+            //   Case Else    : SharedFl = Fl : aIndex = 1 : GridText = TekstInfo(0).Text : AlfaSearch.Show 1
+            //
+            // Here we only have the SQL/“AlfaSearch”‑style search.
+            using (FormSQLSearch fss = new FormSQLSearch())
+            {
+                // Pass current file and index to search form
+                fss.flHere = flHere;
+                fss.indexHere = ComboBoxSearchOn.SelectedIndex;
+                fss.StartKey = MasketEditBoxInfo.Text.TrimEnd();
+
+                var result = fss.ShowDialog(this);
+                if (result != DialogResult.OK)
+                {
+                    // User cancelled or closed the dialog – do not change current record
+                    return;
+                }
+            }
+                        
+            if (KTRL == 0)
+            {
+                // The search found a record: show its key and load fiche
+                MasketEditBoxInfo.Text = VBibTekst(flHere, JETTABLEUSE_INDEX[flHere, 0].TrimEnd());
+                INSERT_FLAG[flHere] = 0;
+                FicheNaarRecord();
+                BasisRecordNaarFiche();
+                            
+                ButtonEdit.Enabled = true;
+            }
+            else
+            {
+                // No record found / user chose a non‑existing key: prepare for insert
+                ButtonEdit.Enabled = false;
+                MasketEditBoxInfo.Text = string.Empty;
+                INSERT_FLAG[flHere] = 1;
+            }
+            MasketEditBoxInfo.Enabled = INSERT_FLAG[flHere] == 0;        
         }
+
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
