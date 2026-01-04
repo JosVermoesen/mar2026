@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ADODB;
+using System;
 using System.Windows.Forms;
 using static mar2026.Classes.AllFunctions;
 using static mar2026.Classes.ModDatabase;
 using static mar2026.Classes.ModLibs;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace mar2026.SharedForms
 {
     public partial class FormSQLSearch : Form
     {
-        string sqlDummy;
+        private readonly int[] _grdColWidth = new int[21];
+
+        public Recordset SqlSearchRS { get; private set; }
 
         public FormSQLSearch()
         {
@@ -28,19 +23,6 @@ namespace mar2026.SharedForms
         {
             Text = Text + ": " + bstNaam[SHARED_FL];
             sqkResultListView.Clear();
-
-            if (SHARED_FL == 1)
-            sqlDummy = "SELECT " +
-                "A110 AS [Nummer], " +
-                "A100 AS [Naam1], " +
-                "A101 AS [Voornaam], " +
-                "A104 & ' ' & A105 & ' ' & A106 AS [Straat], " +
-                "A108 AS [Plaats] " +
-                "FROM Klanten " +
-                "WHERE A100 Like 'van%' " +
-                "ORDER BY A100 ASC";
-
-            rtbSQLTekst.Text = sqlDummy;
 
             FillSortering();
 
@@ -64,23 +46,20 @@ namespace mar2026.SharedForms
         private void ButtonClose_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+            XLOG_KEY = string.Empty;
             Close();
         }
 
         private void ButtonSearch_Click(object sender, EventArgs e)
-        {                    
-            var selectedItem = Convert.ToString(ComboBoxSortOn.SelectedItem ?? string.Empty);
-            if (string.IsNullOrEmpty(selectedItem))
-            {
-                return;
-            }
-
-            SqlRefreshText(selectedItem);
+        {
+            RefreshView();
         }
-        
+
         private void ComboBoxSortOn_SelectedIndexChanged(object sender, EventArgs e)
-        {            
-            
+        {
+            SqlRefreshText(Convert.ToString(ComboBoxSortOn.Text));
+            TextBoxToSearch.Text = "%";
+            CleanUpForm();
         }
 
         private void TextBoxToSearch_TextChanged(object sender, EventArgs e)
@@ -97,16 +76,24 @@ namespace mar2026.SharedForms
                 TextBoxToSearch.SelectionStart = TextBoxToSearch.Text.Length - 1;
                 TextBoxToSearch.SelectionLength = 0;
             }
+            SqlRefreshText(Convert.ToString(ComboBoxSortOn.Text));
         }
 
         private void TextBoxToSearch_KeyPress(object sender, KeyPressEventArgs e)
         {
-            ButtonSearchLike.Text = "Zoeken";
+
+
         }
 
         private void TextBoxToSearch_Enter(object sender, EventArgs e)
         {
-            ButtonSearchLike.Text = "Zoeken";
+            ButtonSearchLike.Enabled = true;
+            ButtonSearchLike.Visible = true;
+            AcceptButton = ButtonSearchLike;
+
+            ButtonOk.Enabled = false;
+            ButtonOk.Visible = false;
+
             TextBoxToSearch.SelectionStart = 0;
             TextBoxToSearch.SelectionLength = TextBoxToSearch.Text.Length;
         }
@@ -155,11 +142,11 @@ namespace mar2026.SharedForms
             cmdBewaar.Enabled = true;
         }
 
-        
+
         private void ListViewSqlResult_DoubleClick(object sender, EventArgs e)
         {
-            // VB6: mfgLijst_DblClick -> cmdZoeken_Click
-            ButtonSearch_Click(sender, e);
+            XLOG_KEY = sqkResultListView.FocusedItem.SubItems[0].Text;
+            ButtonOk.PerformClick();
         }
 
         private void ListViewSqlResult_Enter(object sender, EventArgs e)
@@ -217,6 +204,11 @@ namespace mar2026.SharedForms
             TextBoxToSearch.Text = XLOG_KEY;
         }
 
+        private void ListViewSqlResult_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            XLOG_KEY = sqkResultListView.FocusedItem.SubItems[0].Text;
+            ButtonOk.PerformClick();
+        }
 
         /// <summary>
         /// C# equivalent of VB6 VulcmbSortering.
@@ -254,6 +246,10 @@ namespace mar2026.SharedForms
                         // VB6 format: "+COLUMN; IndexName"
                         string item = "+" + columnName + "; " + indexName;
                         ComboBoxSortOn.Items.Add(item);
+                        //if (ComboBoxSortOn.Items.Count == 2)
+                        //{
+                        //    break; // prevent excessive entries
+                        //}
                     }
 
                     rstSchema.MoveNext();
@@ -311,52 +307,54 @@ namespace mar2026.SharedForms
 
         /// <summary>
         /// C# translation of VB6 SQLVernieuwTekst.
-        /// Builds the SQL string into rtbSQLTekst based on ComboTekst and txtTeZoeken.
-        /// Relies on global state (SharedFl, JETTABLEUSE_INDEX, bstNaam, etc.).
+        /// Builds the SQL in rtbSQLTekst based on ComboTekst and TextBoxToSearch.
+        /// Uses globals SHARED_FL, JETTABLEUSE_INDEX, bstNaam, etc.
         /// </summary>
-        /// <param name="comboTekst">VB6 ComboTekst parameter (sort specification string).</param>
+        /// <param name="comboTekst">Sort specification string, e.g. &quot;+A100;Naam&quot;.</param>
         public void SqlRefreshText(string comboTekst)
         {
-            string sorteerIndex = "";
-            string sorteerOrde = "";
+            string sorteerIndex = string.Empty;
+            string sorteerOrde = string.Empty;
             string sleuteltje;
             int telOrde = 0;
 
             try
             {
                 // grdColWidth(0) = 0
-                // GRD_COLWIDTH[0] = 0;
-
-                sleuteltje =
-                    "marEDB"
-                    + SHARED_FL.ToString("00")
-                    + comboTekst.Substring(0, comboTekst.IndexOf(";", StringComparison.Ordinal));
+                _grdColWidth[0] = 0;
 
 
+                sleuteltje = "marSQL" +
+                    SHARED_FL.ToString("00") +
+                    comboTekst.Substring(0, comboBoxSortOnIndexOf(comboTekst, ";"));
+
+                // parse all sort parts
                 while (true)
                 {
-                    int countTo = comboTekst.IndexOf(";", telOrde, StringComparison.Ordinal);
+                    int countTo = comboBoxSortOnIndexOf(comboTekst, ";", telOrde + 1) - 1;
                     if (countTo < 0)
                     {
                         break;
                     }
 
-                    // COUNT_TO in VB is position of ';' (1-based-1), so use countTo - 4..countTo-1 for the 4-char field name
-                    if (countTo >= 4)
+                    if (countTo >= 3)
                     {
-                        string veld = comboTekst.Substring(countTo - 4, 4);
-                        char prefix = comboTekst[countTo - 5]; // '+' or '-'
+                        // Mid(ComboTekst, COUNT_TO - 3, 4)
+                        string veld = comboTekst.Substring(countTo - 3, 4);
+                        char prefix = countTo - 4 >= 0 ? comboTekst[countTo - 4] : '+';
 
                         if (telOrde == 0)
                         {
                             sorteerIndex = veld;
-                            sorteerOrde = veld + (prefix == '+' ? " ASC" : " DESC");
+                            sorteerOrde = veld;
                         }
                         else
                         {
                             sorteerIndex += "+" + veld;
-                            sorteerOrde += ", " + veld + (prefix == '+' ? " ASC" : " DESC");
+                            sorteerOrde += ", " + veld;
                         }
+
+                        sorteerOrde += prefix == '+' ? " ASC" : " DESC";
                     }
 
                     telOrde = countTo + 1;
@@ -364,7 +362,9 @@ namespace mar2026.SharedForms
 
                 // bGet TABLE_VARIOUS, 1, "29" + Sleuteltje
                 string key = "29" + sleuteltje;
-                BGet(TABLE_VARIOUS, 1, key);
+                // BGet(TABLE_VARIOUS, 1, key);
+                JetGet(TABLE_VARIOUS, 1, key);
+
 
                 if (KTRL != 0)
                 {
@@ -380,6 +380,7 @@ namespace mar2026.SharedForms
 
                 if (upperMsg.Contains("WHERE"))
                 {
+                    // strip existing WHERE .. tail
                     int wherePos = upperMsg.IndexOf(" WHERE ", StringComparison.Ordinal);
                     if (wherePos > 0)
                     {
@@ -387,12 +388,12 @@ namespace mar2026.SharedForms
                     }
 
                     msg += " WHERE " + sorteerIndex +
-                           " Like " + "\"" + TextBoxToSearch.Text + "\"" +
+                           " Like " + "'" + TextBoxToSearch.Text + "'" +
                            " ORDER BY " + sorteerOrde;
 
-                    rtbSQLTekst.Text = msg;
+                    RichTextBoxSQLSelect.Text = msg;
 
-                    // Column widths part after "[Colwidth]"
+                    // parse [Colwidth] section
                     string full = VBibTekst(TABLE_VARIOUS, "#v132 #");
                     int colPos = full.IndexOf("[Colwidth]", StringComparison.Ordinal);
                     if (colPos >= 0)
@@ -400,7 +401,7 @@ namespace mar2026.SharedForms
                         string widthsPart = full.Substring(colPos + "[Colwidth]".Length);
                         if (string.IsNullOrEmpty(widthsPart))
                         {
-                            // GRD_COLWIDTH[0] = 0;
+                            _grdColWidth[0] = 0;
                         }
                         else
                         {
@@ -414,26 +415,26 @@ namespace mar2026.SharedForms
                                 }
 
                                 string part = widthsPart.Substring(0, tabPos);
-                                int val;
-                                if (int.TryParse(part, out val))
+                                if (int.TryParse(part, out int val))
                                 {
-                                    // GRD_COLWIDTH[countTo] = val;
+                                    _grdColWidth[countTo] = val;
                                 }
 
                                 widthsPart = widthsPart.Substring(tabPos + 1);
                                 countTo++;
                             }
 
-                            // GRD_COLWIDTH[countTo] = 0;
+                            _grdColWidth[countTo] = 0;
                         }
                     }
                     else
                     {
-                        // GRD_COLWIDTH[0] = 0;
+                        _grdColWidth[0] = 0;
                     }
                 }
                 else
                 {
+                    // GoSub InitSQL
                     InitSql(comboTekst, sorteerIndex, sorteerOrde);
                 }
             }
@@ -448,8 +449,22 @@ namespace mar2026.SharedForms
         }
 
         /// <summary>
-        /// C# version of VB6 InitSQL GoSub block inside SQLVernieuwTekst.
-        /// Builds a default SELECT statement into RtbSqlTekst based on Sortering list.
+        /// Helper: safe IndexOf wrapper mimicking VB InStr behaviour used in the VB code.
+        /// </summary>
+        private static int comboBoxSortOnIndexOf(string text, string value, int start = 0)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return -1;
+            }
+
+            int pos = text.IndexOf(value, start, StringComparison.Ordinal);
+            return pos < 0 ? -1 : pos;
+        }
+
+        /// <summary>
+        /// C# version of the InitSQL GoSub inside SQLVernieuwTekst.
+        /// Builds a default SELECT into rtbSQLTekst using the items in ComboBoxSortOn.
         /// </summary>
         private void InitSql(string comboTekst, string sorteerIndex, string sorteerOrde)
         {
@@ -473,7 +488,7 @@ namespace mar2026.SharedForms
 
                     if (string.Equals(veldNaam, hoofdIndex, StringComparison.Ordinal))
                     {
-                        string alias = item.Substring(semiPos + 1);
+                        string alias = item.Substring(semiPos + 2);
                         msg += " " + veldNaam + " AS [" + alias + "],";
                         if (i == ComboBoxSortOn.Items.Count - 1)
                         {
@@ -488,7 +503,7 @@ namespace mar2026.SharedForms
             if (msg == "SELECT")
             {
                 MessageBox.Show(
-                    "Hoofdindex bestaat niet (meer)",
+                    @"Hoofdindex bestaat niet (meer)",
                     @"SQL fout",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -514,7 +529,7 @@ namespace mar2026.SharedForms
                         continue;
                     }
 
-                    string alias = item.Substring(semiPos + 1);
+                    string alias = item.Substring(semiPos + 2);
                     msg += " " + veldNaam + " AS [" + alias + "]";
 
                     if (!deLaatste ||
@@ -527,13 +542,185 @@ namespace mar2026.SharedForms
                 }
             }
 
+            // Remove any trailing comma before adding FROM
+            msg = msg.TrimEnd();
+            if (msg.EndsWith(",", StringComparison.Ordinal))
+            {
+                msg = msg.Substring(0, msg.Length - 1);
+            }
+
             msg += " FROM " + bstNaam[SHARED_FL];
             msg += " WHERE " + sorteerIndex +
                    " Like " + "\"" + TextBoxToSearch.Text + "\"" +
                    " ORDER BY " + sorteerOrde;
 
-            rtbSQLTekst.Text = msg;
+            RichTextBoxSQLSelect.Text = msg;
         }
 
+        private void CleanUpForm()
+        {
+            // throw new NotImplementedException();
+        }
+
+        private void ButtonSQLToggle_Click(object sender, EventArgs e)
+        {
+            RichTextBoxSQLSelect.Enabled = !RichTextBoxSQLSelect.Enabled;
+        }
+
+        private void RefreshView()
+        {
+            // Build SQL text based on current sort selection
+            var selectedItem = Convert.ToString(ComboBoxSortOn.SelectedItem ?? string.Empty);
+            if (string.IsNullOrEmpty(selectedItem))
+            {
+                return;
+            }
+
+            SqlRefreshText(selectedItem);
+            var sSQL = RichTextBoxSQLSelect.Text.Replace("\"", "'");
+
+            Cursor = Cursors.WaitCursor;
+
+            try
+            {
+                if (SqlSearchRS != null &&
+                    SqlSearchRS.State == (int)ObjectStateEnum.adStateOpen)
+                {
+                    SqlSearchRS.Close();
+                }
+            }
+            catch
+            {
+                // VB: ignored
+            }
+
+            try
+            {
+                SqlSearchRS = new Recordset
+                {
+                    CursorLocation = CursorLocationEnum.adUseClient
+                };
+
+                // In VB this used AD_NTDB; here you used a connection string.
+                // Keep your existing behavior:
+                string connectionString =
+                    SharedGlobals.DbJetProvider +
+                    SharedGlobals.MimDataLocation +
+                    SharedGlobals.MarntMdvLocation +
+                    "marnt.mdv";
+
+                SqlSearchRS.Open(
+                    sSQL,
+                    connectionString,
+                    CursorTypeEnum.adOpenForwardOnly,
+                    LockTypeEnum.adLockReadOnly);
+
+                // Clear and rebuild columns
+                sqkResultListView.Clear();
+
+                for (int i = 0; i < SqlSearchRS.Fields.Count; i++)
+                {
+                    var name = Convert.ToString(SqlSearchRS.Fields[i].Name ?? string.Empty);
+                    sqkResultListView.Columns.Add(name, 100);
+                }
+
+                sqkResultListView.View = View.Details;
+
+                if (SqlSearchRS.RecordCount > 0)
+                {
+                    SqlSearchRS.MoveFirst();
+                    while (!SqlSearchRS.EOF)
+                    {
+                        string firstValue = Convert.ToString(
+                            SqlSearchRS.Fields[0].Value ?? " ");
+
+                        var item = new ListViewItem(firstValue);
+
+                        for (int i = 1; i < SqlSearchRS.Fields.Count; i++)
+                        {
+                            object value = SqlSearchRS.Fields[i].Value;
+                            string cell = value == null || value is DBNull
+                                ? " "
+                                : Convert.ToString(value);
+                            item.SubItems.Add(cell);
+                        }
+
+                        sqkResultListView.Items.Add(item);
+                        SqlSearchRS.MoveNext();
+                    }
+                }
+
+                if (SqlSearchRS.RecordCount > 0)
+                {
+                    // You can wire a label similarly to VB's recordsLabel if you have one                    
+                    sqkResultListView.FullRowSelect = true;
+
+                    if (sqkResultListView.Items.Count > 0)
+                    {
+                        var firstItem = sqkResultListView.Items[0];
+                        XLOG_KEY = firstItem.SubItems[0].Text;
+                        TextBoxToSearch.Text = XLOG_KEY;
+                        sqkResultListView.Enabled = true;
+                        sqkResultListView.Focus();
+
+                        ButtonOk.Enabled = true;
+                        ButtonOk.Visible = true;
+                        AcceptButton = ButtonOk;
+
+                        ButtonSearchLike.Enabled = false;
+                        ButtonSearchLike.Visible = false;
+                    }
+                }
+                else
+                {
+                    ButtonOk.Enabled = false;
+                    ButtonOk.Visible = false;
+                    AcceptButton = ButtonSearchLike;
+
+                    ButtonSearchLike.Enabled = true;
+                    ButtonSearchLike.Visible = true;
+                    TextBoxToSearch.Focus();
+                }
+            }
+            catch
+            {
+                // Keep debugging behavior close to VB's Stop
+                throw;
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+
+        private void ButtonOk_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void sqkResultListView_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Enter key?
+            if (e.KeyChar == (char)Keys.Return || e.KeyChar == (char)Keys.Enter)
+            {
+                e.Handled = true;
+
+                // Ensure there is a focused item
+                if (sqkResultListView.FocusedItem != null &&
+                    sqkResultListView.FocusedItem.SubItems != null &&
+                    sqkResultListView.FocusedItem.SubItems.Count > 0)
+                {
+                    XLOG_KEY = sqkResultListView.FocusedItem.SubItems[0].Text;
+                    TextBoxToSearch.Text = XLOG_KEY;
+                }
+                ButtonOk.PerformClick();
+            }
+        }
     }
 }
+
+
+
+
+

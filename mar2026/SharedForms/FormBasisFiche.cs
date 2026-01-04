@@ -135,7 +135,7 @@ namespace mar2026
             A_INDEX = ComboBoxSearchOn.SelectedIndex;
 
             using (FormSQLSearch fss = new FormSQLSearch())
-            {                
+            {
                 var result = fss.ShowDialog(this);
                 if (result != DialogResult.OK)
                 {
@@ -143,15 +143,15 @@ namespace mar2026
                     return;
                 }
             }
-                        
+
             if (KTRL == 0)
             {
                 // The search found a record: show its key and load fiche
-                MasketEditBoxInfo.Text = VBibTekst(flHere, JETTABLEUSE_INDEX[flHere, 0].TrimEnd());
+                MasketEditBoxInfo.Text = XLOG_KEY;
+                JetGet(flHere, 0, SetSpacing(MasketEditBoxInfo.Text, FLINDEX_LEN[flHere, 0]));
+
                 INSERT_FLAG[flHere] = 0;
-                FicheNaarRecord();
                 BasisRecordNaarFiche();
-                            
                 ButtonEdit.Enabled = true;
             }
             else
@@ -161,7 +161,7 @@ namespace mar2026
                 MasketEditBoxInfo.Text = string.Empty;
                 INSERT_FLAG[flHere] = 1;
             }
-            MasketEditBoxInfo.Enabled = INSERT_FLAG[flHere] == 0;        
+            MasketEditBoxInfo.Enabled = INSERT_FLAG[flHere] == 0;
         }
 
 
@@ -210,7 +210,7 @@ namespace mar2026
         {
             // Move to record with current key or decide to insert
             string key = SetSpacing(MasketEditBoxInfo.Text, FLINDEX_LEN[flHere, 0]);
-            JetGet(flHere, 0, ref key);
+            JetGet(flHere, 0, key);
 
             if (KTRL == 0)
             {

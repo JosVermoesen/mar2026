@@ -293,21 +293,24 @@
             // ToolStripCustomers
             // 
             this.ToolStripCustomers.Name = "ToolStripCustomers";
-            this.ToolStripCustomers.Size = new System.Drawing.Size(193, 22);
+            this.ToolStripCustomers.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
+            this.ToolStripCustomers.Size = new System.Drawing.Size(234, 22);
             this.ToolStripCustomers.Text = "Klanten";
             this.ToolStripCustomers.Click += new System.EventHandler(this.ToolStripCustomers_Click);
             // 
             // ToolStripSuppliers
             // 
             this.ToolStripSuppliers.Name = "ToolStripSuppliers";
-            this.ToolStripSuppliers.Size = new System.Drawing.Size(193, 22);
+            this.ToolStripSuppliers.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.ToolStripSuppliers.Size = new System.Drawing.Size(234, 22);
             this.ToolStripSuppliers.Text = "Leveranciers";
             this.ToolStripSuppliers.Click += new System.EventHandler(this.ToolStripSuppliers_Click);
             // 
             // ToolStripLedgerAccounts
             // 
             this.ToolStripLedgerAccounts.Name = "ToolStripLedgerAccounts";
-            this.ToolStripLedgerAccounts.Size = new System.Drawing.Size(193, 22);
+            this.ToolStripLedgerAccounts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.ToolStripLedgerAccounts.Size = new System.Drawing.Size(234, 22);
             this.ToolStripLedgerAccounts.Text = "Algemene Rekeningen";
             this.ToolStripLedgerAccounts.Click += new System.EventHandler(this.ToolStripLedgerAccounts_Click);
             // 

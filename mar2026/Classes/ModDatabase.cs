@@ -302,21 +302,16 @@ namespace mar2026.Classes
             }
             else
             {
-                if (RS_MAR[fl].State != (int)ObjectStateEnum.adStateClosed)
+                try
                 {
-                    try
+                    RS_MAR[fl].Close();
+                }
+                catch (Exception ex)
+                {
+                    if (ex is System.Runtime.InteropServices.COMException comEx &&
+                        comEx.ErrorCode == unchecked((int)0x800A0D5C))
                     {
-                        if (RS_MAR[fl].EditMode != (int)EditModeEnum.adEditNone)
-                            RS_MAR[fl].CancelUpdate();
-                        RS_MAR[fl].Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is System.Runtime.InteropServices.COMException comEx &&
-                            comEx.ErrorCode == unchecked((int)0x800A0D5C))
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
+                        MessageBox.Show(ex.Message);
                     }
                 }
             }
@@ -369,38 +364,25 @@ namespace mar2026.Classes
 
         public static void JetGetFirst(int fl, int fIndex)
         {
-            try
+            JetTableClose(fl);
+            string testSQL = "SELECT * FROM " + JET_TABLENAME[fl] +
+                " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
+
+            SQL_MSG[fl] = SQL_MSG[fl] = testSQL;
+
+            KTRL = 0;
+            JetTableOpen(fl);
+
+            if (RS_MAR[fl].EOF || RS_MAR[fl].RecordCount == -1)
             {
-                int numberRecords = RS_MAR[fl].RecordCount;
-                if (numberRecords > 0)
-                {
-                    RS_MAR[fl].MoveFirst();
-                    KEY_INDEX[fl] = fIndex;
-                }
+                MessageBox.Show("Stop");
             }
-            catch (Exception)
+            else
             {
                 try
                 {
-                    JetTableClose(fl);
-
-                    string testSQL = "SELECT * FROM " + JET_TABLENAME[fl] +
-                                  " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
-                    SQL_MSG[fl] = SQL_MSG[fl] = testSQL;
-
-                    KTRL = 0;
-                    JetTableOpen(fl);
-
-                    if (RS_MAR[fl].EOF || RS_MAR[fl].RecordCount == -1)
-                    {
-                        MessageBox.Show("Stop");
-                    }
-                    else
-                    {
-                        RS_MAR[fl].MoveFirst();
-                        KEY_INDEX[fl] = fIndex;
-                    }
-
+                    RS_MAR[fl].MoveFirst();
+                    KEY_INDEX[fl] = fIndex;
                 }
                 catch (Exception)
                 {
@@ -409,40 +391,28 @@ namespace mar2026.Classes
             }
         }
 
+
         public static void JetGetLast(int fl, int fIndex)
         {
-            try
+            JetTableClose(fl);
+            string testSQL = "SELECT * FROM " + JET_TABLENAME[fl] +
+                " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
+
+            SQL_MSG[fl] = SQL_MSG[fl] = testSQL;
+
+            KTRL = 0;
+            JetTableOpen(fl);
+
+            if (RS_MAR[fl].EOF || RS_MAR[fl].RecordCount == -1)
             {
-                int numberRecords = RS_MAR[fl].RecordCount;
-                if (numberRecords > 0)
-                {
-                    RS_MAR[fl].MoveLast();
-                    KEY_INDEX[fl] = fIndex;
-                }
+                MessageBox.Show("Stop");
             }
-            catch (Exception)
+            else
             {
                 try
                 {
-                    JetTableClose(fl);
-
-                    string testSQL = "SELECT * FROM " + JET_TABLENAME[fl] +
-                                  " ORDER BY " + JETTABLEUSE_INDEX[fl, fIndex] + " ASC";
-                    SQL_MSG[fl] = SQL_MSG[fl] = testSQL;
-
-                    KTRL = 0;
-                    JetTableOpen(fl);
-
-                    if (RS_MAR[fl].EOF || RS_MAR[fl].RecordCount == -1)
-                    {
-                        MessageBox.Show("Stop");
-                    }
-                    else
-                    {
-                        RS_MAR[fl].MoveLast();
-                        KEY_INDEX[fl] = fIndex;
-                    }
-
+                    RS_MAR[fl].MoveLast();
+                    KEY_INDEX[fl] = fIndex;
                 }
                 catch (Exception)
                 {
@@ -539,7 +509,7 @@ namespace mar2026.Classes
             }
         }
 
-        public static void JetGet(int fl, int fIndex, ref string fSleutel)
+        public static void JetGet(int fl, int fIndex, string fSleutel)
         {
             JetTableClose(fl);
 
@@ -700,7 +670,7 @@ namespace mar2026.Classes
 
                 string unsafeKey = FVT[TABLE_JOURNAL, 0].Substring(0, 7);
 
-                JetGet(TABLE_LEDGERACCOUNTS, 0, ref unsafeKey);
+                JetGet(TABLE_LEDGERACCOUNTS, 0, unsafeKey);
                 if (KTRL != 0)
                 {
                     MessageBox.Show("Rekening " + Left(FVT[TABLE_JOURNAL, 0], 7) +
@@ -1093,7 +1063,7 @@ namespace mar2026.Classes
             // Old: LOCK_HOLD = lockModus != READING;
             bool lockHoldLocal = lockModus != 0; // 0 is READING
 
-            JetGet(TABLE_COUNTERS, 0, ref tlString);
+            JetGet(TABLE_COUNTERS, 0, tlString);
 
             if (KTRL == 99)
             {
