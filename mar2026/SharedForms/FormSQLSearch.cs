@@ -53,6 +53,7 @@ namespace mar2026.SharedForms
         private void ButtonSearch_Click(object sender, EventArgs e)
         {
             RefreshView();
+            CloseAndCleanRS();
         }
 
         private void ComboBoxSortOn_SelectedIndexChanged(object sender, EventArgs e)
@@ -693,6 +694,34 @@ namespace mar2026.SharedForms
             }
         }
 
+        private void CloseAndCleanRS()
+        {
+            if (SqlSearchRS != null)
+            {
+                try
+                {
+                    // Close the recordset if open
+                    SqlSearchRS.Close();
+                }
+                catch
+                {
+                    // ignore close errors
+                }
+
+                try
+                {
+                    // Release the COM reference
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(SqlSearchRS);
+                }
+                catch
+                {
+                    // ignore release errors
+                }
+
+                // Remove managed reference
+                SqlSearchRS = null;
+            }
+        }
         private void ButtonOk_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
